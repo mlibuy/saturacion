@@ -357,8 +357,8 @@
             </div>
           </div>
           <div class="chart-card">
-            <h3>Derivación / día (diversión)</h3>
-            <p>Pacientes que la Urgencia no puede recibir y deben derivarse.</p>
+            <h3>Hospitalizados en box · censo</h3>
+            <p>Pacientes que completan su hospitalización dentro de la Urgencia: síntoma de saturación.</p>
             <div class="chart-box"><canvas id="chD"></canvas></div>
           </div>
         </div>
@@ -387,8 +387,8 @@
             </div>
           </div>
           <div class="chart-card">
-            <h3>Altas completadas EN la Urgencia · día</h3>
-            <p>Hospitalización completa en un box porque la cama nunca llegó: síntoma de saturación.</p>
+            <h3>Egresos desde el box · día</h3>
+            <p>Altas diarias de quienes completaron su hospitalización en la Urgencia y liberan el box.</p>
             <div class="chart-box"><canvas id="chE"></canvas></div>
           </div>
         </div>
@@ -666,12 +666,12 @@ function renderU(){
     <div class="bcell"><div class="lbl">Cupo ofrecido / día</div><div class="val">${o.offered.toFixed(1)}</div><div class="sub">camas para la Urgencia</div></div>
     <div class="bcell ${def>0.5?'deficit':'ok'}"><div class="lbl">${def>0.5?'Déficit diario':'Holgura diaria'}</div><div class="val">${def>0?'+':'−'}${Math.abs(def).toFixed(1)}</div><div class="sub">${def>0.5?'la cola crece':'el sistema drena'}</div></div>`;
   // kpis
-  const c1=kc(o.fB,o.edCap*0.4,o.edCap*0.85),c2=kc(o.fOM,90,99),c3=kc(o.fL,18,28),c4=kc(o.fD,0.5,3);
+  const c1=kc(o.fB,o.edCap*0.4,o.edCap*0.85),c2=kc(o.fOM,90,99),c3=kc(o.fL,18,28),c4=kc(o.fEdHosp,o.edCap*0.15,o.edCap*0.35);
   document.getElementById('kpis').innerHTML=`
     <div class="kpi"><div class="k-lbl">Censo Urgencia (24 h)</div><div class="k-val" style="color:${c1}">${Math.round(o.fB)}</div><div class="k-sub">esperando + hosp. en box</div><div class="bar" style="width:${Math.min(100,100*o.fB/o.edCap)}%;background:${c1}"></div></div>
     <div class="kpi"><div class="k-lbl">Ocupación cama media</div><div class="k-val" style="color:${c2}">${Math.round(o.fOM)}%</div><div class="k-sub">al final</div><div class="bar" style="width:${Math.min(100,o.fOM)}%;background:${c2}"></div></div>
     <div class="kpi"><div class="k-lbl">LWBS final</div><div class="k-val" style="color:${c3}">${o.fL}%</div><div class="k-sub">se van sin atención</div><div class="bar" style="width:${Math.min(100,o.fL*2)}%;background:${c3}"></div></div>
-    <div class="kpi"><div class="k-lbl">Derivación / día</div><div class="k-val" style="color:${c4}">${o.fD.toFixed(1)}</div><div class="k-sub">${o.fD>0.5?'urgencia desborda':'sin desborde'}</div><div class="bar" style="width:${Math.min(100,o.fD*10)}%;background:${c4}"></div></div>`;
+    <div class="kpi"><div class="k-lbl">Hospitalizados en box</div><div class="k-val" style="color:${c4}">${Math.round(o.fEdHosp)}</div><div class="k-sub">completan hosp. en Urgencia</div><div class="bar" style="width:${Math.min(100,100*o.fEdHosp/o.edCap)}%;background:${c4}"></div></div>`;
   // status
   let cls,txt;
   if(o.fD>0.5||o.fB>=o.edCap*0.85){cls='alarm';txt='URGENCIA COLAPSADA · boarding al tope y derivando pacientes';}
@@ -687,9 +687,9 @@ function renderU(){
   const occDs=[ds('Media',o.occ.media,PAL.media),ds('UTI',o.occ.uti,PAL.uti),ds('UCI',o.occ.uci,PAL.uci)];
   if(!chO){chO=new Chart(document.getElementById('chO'),{type:'line',data:{labels:o.labels,datasets:occDs},options:baseOpts(108)});}
   else{chO.data.labels=o.labels;occDs.forEach((d,i)=>chO.data.datasets[i].data=d.data);chO.update();}
-  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Derivación',o.divert,'#1f3a93')]},options:baseOpts()});
-    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#1f3a93');chD.data.datasets[0].fill=true;chD.update();}
-  else{chD.data.labels=o.labels;chD.data.datasets[0].data=o.divert;chD.update();}
+  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Hosp. en box',o.edHospOcc,'#d64545')]},options:baseOpts()});
+    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#d64545');chD.data.datasets[0].fill=true;chD.update();}
+  else{chD.data.labels=o.labels;chD.data.datasets[0].data=o.edHospOcc;chD.update();}
   if(!chL){chL=new Chart(document.getElementById('chL'),{type:'line',data:{labels:o.labels,datasets:[ds('LWBS',o.lwbs,'#f08a1d')]},options:baseOpts()});
     chL.options.scales.y.ticks={callback:v=>v+'%'};
     const c=chL.canvas.getContext('2d');chL.data.datasets[0].backgroundColor=grad(c,'#f08a1d');chL.data.datasets[0].fill=true;chL.update();}
