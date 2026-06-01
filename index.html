@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Gestión Hospitalaria · Urgencia & Servicio Cerrado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0c1116; --bg2:#11181f; --panel:#151e27; --panel2:#1a2530;
+    --line:#243240; --ink:#e8eef3; --ink-dim:#8da0b0; --ink-faint:#5e7385;
+    --ok:#2dd4a7; --ok-d:#16876a; --warn:#f4b942; --alarm:#ff5d5d; --info:#9d7bff;
+    --media:#5aa9e6; --uti:#f4b942; --uci:#ff5d5d; --dom:#2dd4a7;
+    --mono:'IBM Plex Mono',monospace; --sans:'Archivo',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(45,212,167,.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(90,169,230,.07), transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans); line-height:1.45;
+    -webkit-font-smoothing:antialiased; padding:0 0 80px;
+  }
+  .wrap{max-width:1260px;margin:0 auto;padding:0 22px}
+
+  header{padding:42px 0 0}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--ok);display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);
+    box-shadow:0 0 0 4px rgba(45,212,167,.18);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  h1{font-size:clamp(28px,4.6vw,50px);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:14px 0 6px}
+  h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--ok)}
+  .byline{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);letter-spacing:.04em;margin-top:8px}
+  .byline b{color:var(--ink-dim);font-weight:600}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin-top:26px;border-bottom:1px solid var(--line)}
+  .tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--ink-dim);
+    font-family:var(--sans);font-weight:700;font-size:14.5px;padding:13px 18px;cursor:pointer;
+    transition:.18s;margin-bottom:-1px;display:flex;align-items:center;gap:9px}
+  .tab .ti{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--panel2);
+    color:var(--ink-faint);padding:2px 7px;border-radius:5px}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--ink);border-bottom-color:var(--ok)}
+  .tab.active .ti{background:rgba(45,212,167,.15);color:var(--ok)}
+
+  .view{display:none;padding-top:26px;animation:fade .35s}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .lede{color:var(--ink-dim);max-width:740px;font-size:15px;margin-bottom:20px}
+  .lede b{color:var(--ink)}
+
+  /* balance bar */
+  .balance{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:8px}
+  .bcell{background:var(--panel);padding:15px 17px}
+  .bcell .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+  .bcell .val{font-family:var(--mono);font-size:27px;font-weight:600;margin-top:4px}
+  .bcell .sub{font-size:11.5px;color:var(--ink-dim);margin-top:2px}
+  .bcell.deficit .val{color:var(--alarm)} .bcell.ok .val{color:var(--ok)}
+
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:22px;align-items:start}
+  @media(max-width:960px){.grid{grid-template-columns:1fr}}
+
+  .controls{position:sticky;top:14px}
+  @media(max-width:960px){.controls{position:static}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+  .panel h2{font-size:13px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-dim);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .panel h2 .dot{width:7px;height:7px;border-radius:2px;background:var(--ok)}
+
+  .presets{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+  .preset{border:1px solid var(--line);background:var(--panel2);color:var(--ink);
+    font-family:var(--sans);font-weight:800;font-size:14px;padding:12px 14px;border-radius:12px;
+    cursor:pointer;transition:.18s;text-align:left;line-height:1.2;display:flex;justify-content:space-between;align-items:center}
+  .preset span{display:block;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--ink-faint);
+    letter-spacing:.04em;margin-top:3px;text-transform:none}
+  .preset .tag{font-family:var(--mono);font-size:18px;font-weight:600;opacity:.5}
+  .preset:hover{transform:translateX(3px)}
+  .preset.active{box-shadow:0 0 0 1px currentColor inset}
+  .preset.A.active{border-color:var(--ok);background:rgba(45,212,167,.1);color:var(--ok)}
+  .preset.B.active{border-color:var(--media);background:rgba(90,169,230,.1);color:var(--media)}
+  .preset.C.active{border-color:var(--alarm);background:rgba(255,93,93,.1);color:var(--alarm)}
+  .preset.active span{color:inherit;opacity:.8}
+  .preset .ttl{color:var(--ink)} .preset.active .ttl{color:inherit}
+
+  .ctrl{margin-bottom:14px} .ctrl:last-child{margin-bottom:0}
+  .ctrl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .ctrl label{font-size:12.5px;color:var(--ink);font-weight:500}
+  .ctrl .num{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ok);
+    background:var(--bg2);padding:1px 8px;border-radius:6px;min-width:52px;text-align:right;border:1px solid var(--line)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:5px;
+    background:var(--line);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--ink);border:3px solid var(--ok);cursor:pointer;transition:.12s;box-shadow:0 1px 6px rgba(0,0,0,.5)}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18)}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--ok);cursor:pointer}
+  .sect-divider{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:13px;margin:17px 0 13px;display:flex;align-items:center;gap:8px}
+  .sect-divider i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 15px 13px;position:relative;overflow:hidden}
+  .kpi .k-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .kpi .k-val{font-family:var(--mono);font-size:30px;font-weight:600;margin-top:6px;line-height:1}
+  .kpi .k-sub{font-size:11px;color:var(--ink-dim);margin-top:5px}
+  .kpi .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--ok);transition:width .5s,background .3s}
+
+  .chart-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;margin-bottom:20px}
+  .chart-card h3{font-size:15px;font-weight:800;margin-bottom:2px}
+  .chart-card p{font-size:12.5px;color:var(--ink-dim);margin-bottom:14px;font-family:var(--mono)}
+  .chart-box{position:relative;height:230px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-family:var(--mono);font-size:11.5px}
+  .legend span{display:flex;align-items:center;gap:7px;color:var(--ink-dim)}
+  .legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.two-col{grid-template-columns:1fr}}
+
+  .status{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;
+    padding:7px 14px;border-radius:30px;margin-bottom:18px;font-weight:500}
+  .status.ok{background:rgba(45,212,167,.12);color:var(--ok);border:1px solid rgba(45,212,167,.3)}
+  .status.warn{background:rgba(244,185,66,.12);color:var(--warn);border:1px solid rgba(244,185,66,.3)}
+  .status.alarm{background:rgba(255,93,93,.12);color:var(--alarm);border:1px solid rgba(255,93,93,.35)}
+  .status .blink{width:9px;height:9px;border-radius:50%;background:currentColor}
+  .status.alarm .blink{animation:blink .8s infinite}
+  @keyframes blink{50%{opacity:.2}}
+
+  /* recommendations panel */
+  .reco{background:linear-gradient(180deg,rgba(255,93,93,.06),transparent);border:1px solid var(--line);
+    border-radius:16px;padding:22px;margin-bottom:20px}
+  .reco.show-c{border-color:rgba(255,93,93,.35)}
+  .reco h3{font-size:15px;font-weight:800;margin-bottom:4px}
+  .reco .ll{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-bottom:16px}
+  .reco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .reco-item{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px 15px}
+  .reco-item .rh{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .reco-item .rh .ic{font-family:var(--mono);font-size:11px;background:rgba(157,123,255,.15);color:var(--info);
+    padding:1px 6px;border-radius:4px}
+  .reco-item p{font-size:12px;color:var(--ink-dim);font-family:var(--sans);margin:0}
+
+  /* ---------- Medicine tab ---------- */
+  .ctx-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:22px}
+  .ctx-card .meta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
+  .ctx-card h3{font-size:19px;font-weight:800;margin-bottom:8px}
+  .ctx-card p{font-size:13.5px;color:var(--ink-dim);max-width:820px}
+  .ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin-bottom:22px}
+  .ind{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+  .ind .iname{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+  .ind .ival{font-family:var(--mono);font-size:28px;font-weight:600;margin:6px 0 2px}
+  .ind .idelta{font-family:var(--mono);font-size:11.5px}
+  .ind .iref{font-size:11px;color:var(--ink-dim);margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}
+  .ind .flag{position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%}
+  .up{color:var(--alarm)} .down{color:var(--ok)} .neutral{color:var(--ink-faint)}
+
+  table.gt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:4px}
+  table.gt th,table.gt td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  table.gt th{color:var(--ink-faint);font-weight:600;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+  table.gt td:first-child,table.gt th:first-child{text-align:left;color:var(--ink)}
+  table.gt tr:hover td{background:var(--panel2)}
+  .tbl-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:22px}
+
+  .whatif{background:linear-gradient(180deg,rgba(45,212,167,.06),transparent);border:1px solid rgba(45,212,167,.3);
+    border-radius:16px;padding:22px;margin-bottom:22px}
+  .whatif h3{font-size:16px;font-weight:800;margin-bottom:4px}
+  .whatif .ll{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-bottom:18px}
+  .wi-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:18px}
+  .wi-out .b{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .wi-out .b .l{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
+  .wi-out .b .v{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--ok);margin-top:5px}
+  .wi-out .b .s{font-size:11px;color:var(--ink-dim);margin-top:4px}
+
+  footer{margin-top:36px;padding-top:22px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);line-height:1.7}
+  footer b{color:var(--ink-dim);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Gestión y Administración en Salud · Modelo de flujo hospitalario</div>
+    <h1>El hospital como <em>sistema de flujo</em></h1>
+    <div class="byline">Desarrollado por <b>Matías Libuy</b> · herramienta educativa de simulación</div>
+
+    <div class="tabs">
+      <button class="tab active" data-view="urg"><span class="ti">1</span>Urgencia · saturación y flujo</button>
+      <button class="tab" data-view="med"><span class="ti">2</span>Servicio cerrado · Medicina Interna (GRD)</button>
+    </div>
+  </header>
+
+  <!-- ============================== VIEW 1: URGENCIA ============================== -->
+  <section class="view active" id="view-urg">
+    <p class="lede">La Urgencia funciona como un <b>estanque</b>: entra un caudal de pacientes y debe drenar por varias válvulas. Quienes necesitan cama solo salen si hay cama libre <b>río abajo</b>; si no la hay, hacen <b>boarding</b> (esperan en la Urgencia). Cuando las válvulas que sacan pacientes se cierran, la Urgencia se satura aunque la entrada nunca cambie. Elige un escenario y mueve las perillas.</p>
+
+    <div class="balance" id="balance"></div>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin:8px 0 0">
+      <b style="color:var(--ink-dim)">Ley de Little:</b> una unidad con C camas y estadía E egresa ≈ C ÷ E pacientes/día. Si la demanda supera esa capacidad, la cola crece.</p>
+
+    <div class="grid">
+      <div class="controls">
+        <div class="panel">
+          <h2><span class="dot"></span>Escenarios</h2>
+          <div class="presets">
+            <button class="preset A active" id="pA"><span><b class="ttl">Situación A — Base normal</b><span>Hospital bien dotado, tenso pero fluye</span></span><span class="tag">A</span></button>
+            <button class="preset B" id="pB"><span><b class="ttl">Situación B — Óptima</b><span>Camas holgadas + estadías cortas</span></span><span class="tag">B</span></button>
+            <button class="preset C" id="pC"><span><b class="ttl">Situación C — Colapso</b><span>Pocas camas + estadías prolongadas</span></span><span class="tag">C</span></button>
+          </div>
+
+          <div class="sect-divider"><i style="background:var(--ok)"></i>Entrada a la Urgencia</div>
+          <div class="ctrl"><div class="row"><label>Admisiones / día</label><span class="num" id="v_arr">150</span></div><input type="range" id="arr" min="80" max="260" step="5" value="150"></div>
+          <div class="ctrl"><div class="row"><label>% que se hospitaliza</label><span class="num" id="v_hosp">20%</span></div><input type="range" id="hosp" min="5" max="40" step="1" value="20"></div>
+          <div class="ctrl"><div class="row"><label>LWBS base (sistema sano)</label><span class="num" id="v_lwbs">10%</span></div><input type="range" id="lwbs" min="0" max="25" step="1" value="10"></div>
+          <div class="ctrl"><div class="row"><label>LWBS máximo (con colapso)</label><span class="num" id="v_lwbsmax">40%</span></div><input type="range" id="lwbsmax" min="10" max="70" step="1" value="40"></div>
+
+          <div class="sect-divider"><i style="background:var(--media)"></i>Camas por servicio</div>
+          <div class="ctrl"><div class="row"><label>Camas medias</label><span class="num" id="v_bM">120</span></div><input type="range" id="bM" min="20" max="300" step="5" value="120"></div>
+          <div class="ctrl"><div class="row"><label>Camas UTI (intermedio)</label><span class="num" id="v_bT">28</span></div><input type="range" id="bT" min="5" max="80" step="1" value="28"></div>
+          <div class="ctrl"><div class="row"><label>Camas UCI (intensivo)</label><span class="num" id="v_bU">10</span></div><input type="range" id="bU" min="2" max="40" step="1" value="10"></div>
+          <div class="ctrl"><div class="row"><label>Camas hosp. domiciliaria</label><span class="num" id="v_bD">60</span></div><input type="range" id="bD" min="0" max="200" step="5" value="60"></div>
+
+          <div class="sect-divider"><i style="background:var(--ok)"></i>Válvula río abajo</div>
+          <div class="ctrl"><div class="row"><label>Capacidad física de la Urgencia</label><span class="num" id="v_ed">35</span></div><input type="range" id="ed" min="8" max="80" step="1" value="35"></div>
+          <div class="ctrl"><div class="row"><label>% camas dotación ofrecidas / día</label><span class="num" id="v_off">18%</span></div><input type="range" id="off" min="2" max="40" step="1" value="18"></div>
+
+          <div class="sect-divider"><i style="background:var(--media)"></i>Estadías promedio (días)</div>
+          <div class="ctrl"><div class="row"><label>Cama media</label><span class="num" id="v_losM">7</span></div><input type="range" id="losM" min="3" max="20" step="0.5" value="7"></div>
+          <div class="ctrl"><div class="row"><label>UTI</label><span class="num" id="v_losT">10</span></div><input type="range" id="losT" min="4" max="25" step="0.5" value="10"></div>
+          <div class="ctrl"><div class="row"><label>UCI</label><span class="num" id="v_losU">14</span></div><input type="range" id="losU" min="5" max="30" step="0.5" value="14"></div>
+          <div class="ctrl"><div class="row"><label>Domiciliaria</label><span class="num" id="v_losD">12</span></div><input type="range" id="losD" min="3" max="21" step="0.5" value="12"></div>
+
+          <div class="sect-divider"><i style="background:var(--uci)"></i>Destino de los hospitalizados</div>
+          <div class="ctrl"><div class="row"><label>→ UCI</label><span class="num" id="v_pU">1%</span></div><input type="range" id="pU" min="0" max="15" step="0.5" value="1"></div>
+          <div class="ctrl"><div class="row"><label>→ UTI</label><span class="num" id="v_pT">10%</span></div><input type="range" id="pT" min="0" max="40" step="1" value="10"></div>
+          <div class="ctrl"><div class="row"><label>→ Domiciliaria</label><span class="num" id="v_pD">20%</span></div><input type="range" id="pD" min="0" max="60" step="1" value="20"></div>
+          <div class="ctrl"><div class="row"><label>→ Cama media <span style="color:var(--ink-faint);font-family:var(--mono);font-size:11px">(resto)</span></label><span class="num" id="v_pM">69%</span></div></div>
+
+          <div class="sect-divider"><i style="background:var(--ink-faint)"></i>Simulación</div>
+          <div class="ctrl"><div class="row"><label>Ocupación inicial</label><span class="num" id="v_init">80%</span></div><input type="range" id="init" min="0" max="100" step="5" value="80"></div>
+          <div class="ctrl"><div class="row"><label>Días a simular</label><span class="num" id="v_days">120</span></div><input type="range" id="days" min="14" max="240" step="1" value="120"></div>
+        </div>
+      </div>
+
+      <div class="results">
+        <div id="status"></div>
+        <div class="kpis" id="kpis"></div>
+
+        <div class="chart-card">
+          <h3>Pacientes en boarding — censo de 24 h</h3>
+          <p>Cuántos pacientes esperan cama dentro de la Urgencia en un día cualquiera. Es la saturación, hecha número.</p>
+          <div class="chart-box"><canvas id="chB"></canvas></div>
+        </div>
+
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Ocupación por unidad (%)</h3>
+            <p>Al llegar a 100% deja de sacar pacientes de la Urgencia.</p>
+            <div class="chart-box"><canvas id="chO"></canvas></div>
+            <div class="legend">
+              <span><i style="background:var(--media)"></i>Media</span>
+              <span><i style="background:var(--uti)"></i>UTI</span>
+              <span><i style="background:var(--uci)"></i>UCI</span>
+              <span><i style="background:var(--dom)"></i>Domic.</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Derivación / día (diversión)</h3>
+            <p>Pacientes que la Urgencia no puede recibir y deben derivarse.</p>
+            <div class="chart-box"><canvas id="chD"></canvas></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Tasa de LWBS — se van sin ser atendidos (%)</h3>
+          <p>Indicador de seguridad que se dispara cuando la Urgencia colapsa.</p>
+          <div class="chart-box"><canvas id="chL"></canvas></div>
+        </div>
+
+        <div class="reco" id="reco">
+          <h3 id="reco-h">Indicadores a vigilar</h3>
+          <div class="ll" id="reco-l"></div>
+          <div class="reco-grid" id="reco-g"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== VIEW 2: MEDICINA INTERNA ============================== -->
+  <section class="view" id="view-med">
+    <p class="lede">Cambiamos de perspectiva: ahora estamos <b>dentro</b> de un servicio de atención cerrada. La Urgencia presiona por una cama; este servicio decide cuán rápido la libera. Aquí se gestiona con los <b>indicadores GRD</b> del taller. Caso: <b>Hospital Alicia Rodríguez, Servicio de Medicina Interna</b> (250 camas, alta complejidad).</p>
+
+    <div class="ctx-card">
+      <div class="meta">Caso · Santiago · 250 camas de complejidad media</div>
+      <h3>El servicio que no logra dar de alta</h3>
+      <p>La norma ministerial fija una estadía media bruta cercana a <b>8 días</b> para este tipo de servicio. En cinco años la estadía media subió de 10,1 a 11,4 días y el IEMA pasó de 1,06 a 1,12: las hospitalizaciones duran cada vez <b>más de lo esperado</b> para su complejidad. Cada día de más es una cama que la Urgencia no recibe. Los indicadores muestran un servicio que produce más, con casos algo más complejos, pero que pierde eficiencia interna.</p>
+    </div>
+
+    <div class="ind-grid" id="ind-grid"></div>
+
+    <div class="two-col">
+      <div class="chart-card">
+        <h3>Estadía media bruta e IEMA</h3>
+        <p>Eficiencia interna: cuánto se aleja la estadía de lo esperado.</p>
+        <div class="chart-box"><canvas id="mEM"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--media)"></i>EM Bruta (días)</span>
+          <span><i style="background:var(--alarm)"></i>IEMA</span>
+          <span><i style="background:var(--ink-faint)"></i>Norma 8 d / IEMA 1,0</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Egresos y producción (UPH)</h3>
+        <p>Volumen de actividad ajustado por complejidad (UPH = Egresos × PM GRD).</p>
+        <div class="chart-box"><canvas id="mUPH"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--ok)"></i>Egresos</span>
+          <span><i style="background:var(--uti)"></i>UPH</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="chart-card">
+        <h3>Outliers superiores y exceso de estancias</h3>
+        <p>Pacientes "varados" y los días-cama que consumen de más.</p>
+        <div class="chart-box"><canvas id="mOut"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--alarm)"></i>Outliers sup. (%)</span>
+          <span><i style="background:var(--uti)"></i>Exceso días-cama</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Mortalidad y reingresos &lt; 7 días</h3>
+        <p>Señales de complejidad y de continuidad del cuidado tras el alta.</p>
+        <div class="chart-box"><canvas id="mMort"></canvas></div>
+        <div class="legend">
+          <span><i style="background:var(--uci)"></i>Fallecidos (%)</span>
+          <span><i style="background:var(--media)"></i>Reingresos &lt;7d (%)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="gt" id="gtable"></table>
+    </div>
+
+    <div class="whatif">
+      <h3>¿Qué pasa si recuperamos la eficiencia? (año 2024)</h3>
+      <div class="ll">Si el servicio acercara su IEMA al valor objetivo, ¿cuántas camas-día se liberarían para la Urgencia?</div>
+      <div class="ctrl" style="max-width:420px">
+        <div class="row"><label>IEMA objetivo</label><span class="num" id="v_iema">1.00</span></div>
+        <input type="range" id="iema" min="1.00" max="1.12" step="0.01" value="1.00">
+      </div>
+      <div class="wi-out" id="wi-out"></div>
+      <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:14px;line-height:1.6">
+        Estimación: días-cama liberados ≈ días-cama totales × (1 − IEMA objetivo ÷ IEMA actual). Egresos adicionales = días-cama liberados ÷ estadía objetivo. Valores referenciales con fines docentes.</p>
+    </div>
+
+    <div class="reco show-c">
+      <h3>Lectura de gestión · Medicina Interna</h3>
+      <div class="ll">Tres indicadores para fundamentar una propuesta (formato policy brief del taller)</div>
+      <div class="reco-grid">
+        <div class="reco-item"><div class="rh">IEMA &amp; EM Bruta <span class="ic">eficiencia</span></div><p>IEMA 1,12 y EM bruta 11,4 d (norma ≈ 8) indican estancias más largas de lo esperado. La causa típica no es clínica sino organizacional: gestión de camas, altas tardías y coordinación con la red.</p></div>
+        <div class="reco-item"><div class="rh">Outliers &amp; exceso <span class="ic">camas</span></div><p>9,3% de outliers superiores (norma &lt;5%) y ~11.800 días-cama de exceso. Una unidad de gestión de altas y criterios de egreso explícitos atacan directamente este stock de pacientes varados.</p></div>
+        <div class="reco-item"><div class="rh">Reingresos &lt;7d <span class="ic">red</span></div><p>Aún bajos (1,9%), pero al acelerar altas hay que vigilarlos: una alta prematura sin seguimiento ambulatorio devuelve al paciente por Urgencia y empeora el flujo global.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>Cómo leer la pestaña Urgencia.</b> Cada día entran las admisiones; una parte se va de alta (válvula buena), otra se va sin ser atendida — LWBS — y el resto necesita cama. Si no hay cama libre, el paciente hace boarding. El censo de boarding es un número de 24 h; cuando supera la capacidad física de la Urgencia, el exceso se deriva (diversión).<br>
+    <b>Cómo leer la pestaña Medicina.</b> Mismos pacientes, otra punta del sistema. La estadía media y el IEMA deciden cuán rápido se liberan camas — es decir, cuánto alivio recibe la Urgencia.<br>
+    <b>Modelo educativo</b> — simulación determinística de flujo en tiempo discreto (1 paso = 1 día). No reemplaza estadística operacional real. · Desarrollado por <b>Matías Libuy</b>.
+  </footer>
+
+</div>
+
+<script>
+/* ===================== TABS ===================== */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('view-'+t.dataset.view).classList.add('active');
+  if(t.dataset.view==='med') initMed();
+});
+
+/* ===================== URGENCIA ===================== */
+const uIds=['arr','hosp','lwbs','lwbsmax','bM','bT','bU','bD','ed','off','losM','losT','losU','losD','pU','pT','pD','init','days'];
+
+function readU(){
+  const g=id=>parseFloat(document.getElementById(id).value);
+  const s={arrivals:g('arr'),pHosp:g('hosp')/100,lwbsBase:g('lwbs')/100,lwbsMax:g('lwbsmax')/100,
+    beds:{media:g('bM'),uti:g('bT'),uci:g('bU'),dom:g('bD')},
+    edCap:g('ed'),offeredPct:g('off')/100,
+    los:{media:g('losM'),uti:g('losT'),uci:g('losU'),dom:g('losD')},
+    pUCI:g('pU')/100,pUTI:g('pT')/100,pDom:g('pD')/100,
+    init:g('init')/100,days:Math.round(g('days')),lwbsK:15};
+  s.pMedia=Math.max(0,1-s.pUCI-s.pUTI-s.pDom);
+  return s;
+}
+function syncU(s){
+  const t=(id,v)=>document.getElementById(id).textContent=v;
+  t('v_arr',s.arrivals);t('v_hosp',Math.round(s.pHosp*100)+'%');
+  t('v_lwbs',Math.round(s.lwbsBase*100)+'%');t('v_lwbsmax',Math.round(s.lwbsMax*100)+'%');
+  t('v_bM',s.beds.media);t('v_bT',s.beds.uti);t('v_bU',s.beds.uci);t('v_bD',s.beds.dom);
+  t('v_ed',s.edCap);t('v_off',Math.round(s.offeredPct*100)+'%');
+  t('v_losM',s.los.media);t('v_losT',s.los.uti);t('v_losU',s.los.uci);t('v_losD',s.los.dom);
+  t('v_pU',(s.pUCI*100).toFixed(s.pUCI*100%1?1:0)+'%');t('v_pT',Math.round(s.pUTI*100)+'%');
+  t('v_pD',Math.round(s.pDom*100)+'%');t('v_pM',Math.round(s.pMedia*100)+'%');
+  t('v_init',Math.round(s.init*100)+'%');t('v_days',s.days);
+}
+
+function simulate(s){
+  const phys=s.beds.media+s.beds.uti+s.beds.uci;
+  const occ={media:s.beds.media*s.init,uti:s.beds.uti*s.init,uci:s.beds.uci*s.init,dom:s.beds.dom*s.init};
+  const board={media:0,uti:0,uci:0,dom:0};
+  const o={labels:[],boarding:[],lwbs:[],divert:[],occ:{media:[],uti:[],uci:[],dom:[]}};
+  for(let d=1;d<=s.days;d++){
+    for(const k of ['media','uti','uci','dom']) occ[k]-=occ[k]/s.los[k];
+    let B=board.media+board.uti+board.uci+board.dom;
+    const lwbs=s.lwbsBase+(s.lwbsMax-s.lwbsBase)*(B/(B+s.lwbsK));
+    const admits=s.arrivals*(1-lwbs)*s.pHosp;
+    board.uci+=admits*s.pUCI;board.uti+=admits*s.pUTI;board.dom+=admits*s.pDom;board.media+=admits*s.pMedia;
+    const offeredSlots=s.offeredPct*phys;let moved=0;
+    for(const k of ['uci','uti','media']){
+      const free=Math.max(0,s.beds[k]-occ[k]),room=Math.max(0,offeredSlots-moved);
+      const m=Math.min(board[k],free,room);occ[k]+=m;board[k]-=m;moved+=m;
+    }
+    {const free=Math.max(0,s.beds.dom-occ.dom);const m=Math.min(board.dom,free);occ.dom+=m;board.dom-=m;}
+    B=board.media+board.uti+board.uci+board.dom;let div=0;
+    if(B>s.edCap){div=B-s.edCap;const f=s.edCap/B;for(const k in board)board[k]*=f;B=s.edCap;}
+    o.labels.push(d);o.boarding.push(+B.toFixed(1));o.lwbs.push(+(lwbs*100).toFixed(1));o.divert.push(+div.toFixed(1));
+    for(const k of ['media','uti','uci','dom'])o.occ[k].push(s.beds[k]>0?+(100*occ[k]/s.beds[k]).toFixed(1):0);
+  }
+  o.fB=o.boarding.at(-1);o.fL=o.lwbs.at(-1);o.fD=o.divert.at(-1);
+  o.fOM=o.occ.media.at(-1);
+  o.collapse=o.boarding.findIndex(b=>b>=s.edCap*0.9)+1||0;
+  o.capacity=s.beds.media/s.los.media+s.beds.uti/s.los.uti+s.beds.uci/s.los.uci+s.beds.dom/s.los.dom;
+  o.demandBeds=s.arrivals*s.pHosp;
+  o.offered=s.offeredPct*phys;
+  o.edCap=s.edCap;
+  return o;
+}
+
+const PAL={media:'#5aa9e6',uti:'#f4b942',uci:'#ff5d5d',dom:'#2dd4a7'};
+const FM="'IBM Plex Mono', monospace";
+Chart.defaults.color='#8da0b0';Chart.defaults.font.family=FM;Chart.defaults.font.size=11;
+let chB,chO,chD,chL;
+
+function baseOpts(yMax){
+  const y={grid:{color:'rgba(36,50,64,.5)'},beginAtZero:true};
+  if(yMax){y.max=yMax;y.ticks={callback:v=>v+'%'}}
+  return {responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#11181f',borderColor:'#243240',borderWidth:1,
+      titleFont:{family:FM},bodyFont:{family:FM},padding:10,callbacks:{title:it=>'Día '+it[0].label}}},
+    scales:{x:{grid:{color:'rgba(36,50,64,.5)'},ticks:{maxTicksLimit:12}},y}};
+}
+function ds(label,data,color,fill){return {label,data,borderColor:color,backgroundColor:fill||'transparent',
+  borderWidth:2,pointRadius:0,tension:.25,fill:!!fill};}
+function grad(ctx,c){const g=ctx.createLinearGradient(0,0,0,230);g.addColorStop(0,c+'55');g.addColorStop(1,c+'00');return g;}
+
+function kc(v,w,a){return v>=a?'var(--alarm)':v>=w?'var(--warn)':'var(--ok)'}
+
+function renderU(){
+  const s=readU();syncU(s);const o=simulate(s);
+  // balance
+  const def=o.demandBeds-Math.min(o.capacity,o.offered);
+  document.getElementById('balance').innerHTML=`
+    <div class="bcell"><div class="lbl">Demanda de cama / día</div><div class="val">${o.demandBeds.toFixed(1)}</div><div class="sub">deben hospitalizarse</div></div>
+    <div class="bcell"><div class="lbl">Capacidad de egreso / día</div><div class="val">${o.capacity.toFixed(1)}</div><div class="sub">Σ camas ÷ estadía</div></div>
+    <div class="bcell"><div class="lbl">Cupo ofrecido / día</div><div class="val">${o.offered.toFixed(1)}</div><div class="sub">camas para la Urgencia</div></div>
+    <div class="bcell ${def>0.5?'deficit':'ok'}"><div class="lbl">${def>0.5?'Déficit diario':'Holgura diaria'}</div><div class="val">${def>0?'+':'−'}${Math.abs(def).toFixed(1)}</div><div class="sub">${def>0.5?'la cola crece':'el sistema drena'}</div></div>`;
+  // kpis
+  const c1=kc(o.fB,o.edCap*0.4,o.edCap*0.85),c2=kc(o.fOM,90,99),c3=kc(o.fL,18,28),c4=kc(o.fD,0.5,3);
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi"><div class="k-lbl">Boarding (24 h)</div><div class="k-val" style="color:${c1}">${Math.round(o.fB)}</div><div class="k-sub">esperan cama en Urgencia</div><div class="bar" style="width:${Math.min(100,100*o.fB/o.edCap)}%;background:${c1}"></div></div>
+    <div class="kpi"><div class="k-lbl">Ocupación cama media</div><div class="k-val" style="color:${c2}">${Math.round(o.fOM)}%</div><div class="k-sub">al final</div><div class="bar" style="width:${Math.min(100,o.fOM)}%;background:${c2}"></div></div>
+    <div class="kpi"><div class="k-lbl">LWBS final</div><div class="k-val" style="color:${c3}">${o.fL}%</div><div class="k-sub">se van sin atención</div><div class="bar" style="width:${Math.min(100,o.fL*2)}%;background:${c3}"></div></div>
+    <div class="kpi"><div class="k-lbl">Derivación / día</div><div class="k-val" style="color:${c4}">${o.fD.toFixed(1)}</div><div class="k-sub">${o.fD>0.5?'urgencia desborda':'sin desborde'}</div><div class="bar" style="width:${Math.min(100,o.fD*10)}%;background:${c4}"></div></div>`;
+  // status
+  let cls,txt;
+  if(o.fD>0.5||o.fB>=o.edCap*0.85){cls='alarm';txt='URGENCIA COLAPSADA · boarding al tope y derivando pacientes';}
+  else if(o.fB>o.edCap*0.3){cls='warn';txt='URGENCIA EN TENSIÓN · la cola se acumula pero contiene';}
+  else{cls='ok';txt='URGENCIA FLUYENDO · el sistema drena lo que entra';}
+  document.getElementById('status').innerHTML=`<div class="status ${cls}"><span class="blink"></span>${txt}</div>`;
+  // recommendations
+  renderReco(o);
+  // charts
+  if(!chB){chB=new Chart(document.getElementById('chB'),{type:'line',data:{labels:o.labels,datasets:[ds('Boarding',o.boarding,'#ff5d5d')]},options:baseOpts()});
+    const c=chB.canvas.getContext('2d');chB.data.datasets[0].backgroundColor=grad(c,'#ff5d5d');chB.data.datasets[0].fill=true;chB.update();}
+  else{chB.data.labels=o.labels;chB.data.datasets[0].data=o.boarding;chB.update();}
+  const occDs=[ds('Media',o.occ.media,PAL.media),ds('UTI',o.occ.uti,PAL.uti),ds('UCI',o.occ.uci,PAL.uci),ds('Domic.',o.occ.dom,PAL.dom)];
+  if(!chO){chO=new Chart(document.getElementById('chO'),{type:'line',data:{labels:o.labels,datasets:occDs},options:baseOpts(108)});}
+  else{chO.data.labels=o.labels;occDs.forEach((d,i)=>chO.data.datasets[i].data=d.data);chO.update();}
+  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Derivación',o.divert,'#9d7bff')]},options:baseOpts()});
+    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#9d7bff');chD.data.datasets[0].fill=true;chD.update();}
+  else{chD.data.labels=o.labels;chD.data.datasets[0].data=o.divert;chD.update();}
+  if(!chL){chL=new Chart(document.getElementById('chL'),{type:'line',data:{labels:o.labels,datasets:[ds('LWBS',o.lwbs,'#f4b942')]},options:baseOpts()});
+    chL.options.scales.y.ticks={callback:v=>v+'%'};
+    const c=chL.canvas.getContext('2d');chL.data.datasets[0].backgroundColor=grad(c,'#f4b942');chL.data.datasets[0].fill=true;chL.update();}
+  else{chL.data.labels=o.labels;chL.data.datasets[0].data=o.lwbs;chL.update();}
+}
+
+function renderReco(o){
+  const collapsed=o.fD>0.5||o.fB>=o.edCap*0.85;
+  const tense=!collapsed&&o.fB>o.edCap*0.3;
+  const box=document.getElementById('reco');
+  box.classList.toggle('show-c',collapsed);
+  document.getElementById('reco-h').textContent= collapsed?'⚠ Situación C — indicadores de colapso a vigilar' : tense?'Indicadores de tensión a vigilar':'Indicadores en rango — sistema sano';
+  document.getElementById('reco-l').textContent= collapsed
+    ? 'La Urgencia no es el problema: el problema está río abajo. Estos son los indicadores y palancas que un equipo de gestión debería accionar.'
+    : 'Con el sistema fluyendo, estos indicadores sirven de alerta temprana antes de que aparezca el colapso.';
+  const items=[
+    ['Tasa de LWBS','seguridad',`Hoy ${o.fL}%. Sobre ~15-20% es señal de espera intolerable. Sube sola con el boarding: es termómetro y consecuencia a la vez.`],
+    ['Boarding / tiempo en Urgencia','flujo',`Censo ${Math.round(o.fB)} pacientes (tope físico ${o.edCap}). El indicador clave del colapso no se origina en la Urgencia sino en la falta de cama.`],
+    ['Horas en diversión','red',`Derivación ${o.fD.toFixed(1)}/día. Cuando es >0 el hospital expulsa demanda a la red: medir y minimizar.`],
+    ['Índice de ocupación río abajo','camas',`Media ${Math.round(o.fOM)}%. Sobre 90-95% el sistema pierde capacidad de absorber peaks. Gestión de altas y estadía son las palancas.`],
+    ['Capacidad vs demanda (Little)','estructura',`Egreso ${o.capacity.toFixed(1)}/día vs demanda ${o.demandBeds.toFixed(1)}/día. Si la demanda gana, ninguna mejora "dentro" de la Urgencia alcanza.`],
+    ['% camas ofrecidas / estadía','política',`Ofrecer más cupo o acortar estadías mueve la capacidad de egreso. Es donde una propuesta de gestión genera impacto real.`]
+  ];
+  document.getElementById('reco-g').innerHTML=items.map(i=>
+    `<div class="reco-item"><div class="rh">${i[0]} <span class="ic">${i[1]}</span></div><p>${i[2]}</p></div>`).join('');
+}
+
+/* presets */
+const setV=v=>{for(const k in v)document.getElementById(k).value=v[k];};
+const PRESETS={
+  A:{arr:150,hosp:20,lwbs:10,lwbsmax:40,bM:120,bT:28,bU:10,bD:60,ed:35,off:18,losM:7,losT:10,losU:14,losD:12,pU:1,pT:10,pD:20,init:80,days:120},
+  B:{arr:150,hosp:20,lwbs:8,lwbsmax:35,bM:150,bT:35,bU:12,bD:90,ed:35,off:30,losM:5,losT:8,losU:10,losD:8,pU:1,pT:10,pD:20,init:80,days:120},
+  C:{arr:150,hosp:20,lwbs:10,lwbsmax:55,bM:60,bT:30,bU:10,bD:50,ed:35,off:9,losM:9,losT:12,losU:16,losD:16,pU:1,pT:10,pD:20,init:80,days:120}
+};
+function activate(w){['A','B','C'].forEach(k=>document.getElementById('p'+k).classList.toggle('active',k===w));}
+document.getElementById('pA').onclick=()=>{setV(PRESETS.A);activate('A');renderU();};
+document.getElementById('pB').onclick=()=>{setV(PRESETS.B);activate('B');renderU();};
+document.getElementById('pC').onclick=()=>{setV(PRESETS.C);activate('C');renderU();};
+uIds.forEach(id=>document.getElementById(id).addEventListener('input',()=>{activate(null);renderU();}));
+renderU();
+
+/* ===================== MEDICINA INTERNA ===================== */
+const MED=[
+  {y:2020,eg:11125,pm:1.25,uph:13906,em:10.1,iema:1.06,out:7.5,exc:9200,dc:112363,fal:6.3,re:1.4},
+  {y:2021,eg:11810,pm:1.27,uph:14969,em:10.3,iema:1.08,out:8.2,exc:10045,dc:121643,fal:6.5,re:1.6},
+  {y:2022,eg:12430,pm:1.30,uph:16159,em:10.8,iema:1.10,out:8.9,exc:10972,dc:134244,fal:6.7,re:1.7},
+  {y:2023,eg:12920,pm:1.31,uph:16925,em:11.2,iema:1.11,out:9.1,exc:11330,dc:144704,fal:6.9,re:1.8},
+  {y:2024,eg:13370,pm:1.33,uph:17792,em:11.4,iema:1.12,out:9.3,exc:11805,dc:152418,fal:7.0,re:1.9},
+];
+let medInit=false,mEM,mUPH,mOut,mMort;
+function initMed(){
+  if(medInit){return;} medInit=true;
+  const L=MED.map(r=>r.y), last=MED.at(-1), first=MED[0];
+  // indicator cards
+  const cards=[
+    ['Egresos',last.eg.toLocaleString('es'),last.eg-first.eg,'volumen','Actividad creciente; consistente con un servicio de alta demanda.'],
+    ['PM GRD',last.pm.toFixed(2),(last.pm-first.pm).toFixed(2),'1,2–1,6 alta compl.','Dentro de rango de alta complejidad; casuística algo más pesada.'],
+    ['EM Bruta',last.em+' d',(last.em-first.em).toFixed(1)+' d','norma ≈ 8 d','Sobre la norma y subiendo: principal alerta de eficiencia.'],
+    ['IEMA',last.iema.toFixed(2),(last.iema-first.iema).toFixed(2),'1,00 esperado','>1 = estancias más largas de lo esperado para el GRD.'],
+    ['Outliers sup.',last.out+'%',(last.out-first.out).toFixed(1)+' pp','&lt; 5%','Casi el doble del umbral: pacientes varados.'],
+    ['Fallecidos',last.fal+'%',(last.fal-first.fal).toFixed(1)+' pp','1–5% alta compl.','En el borde alto; vigilar junto a complejidad.'],
+    ['Reingresos &lt;7d',last.re+'%',(last.re-first.re).toFixed(1)+' pp','&lt; 5–10%','Bajo: la continuidad post-alta hoy no es el problema.'],
+    ['Exceso días-cama',last.exc.toLocaleString('es'),last.exc-first.exc,(((last.exc/last.dc)*100).toFixed(1))+'% del total','Ideal &lt;5% del total; hoy lo supera.'],
+  ];
+  document.getElementById('ind-grid').innerHTML=cards.map(c=>{
+    const dn=typeof c[2]==='number'?c[2]:parseFloat(c[2]);
+    const bad=['EM Bruta','IEMA','Outliers sup.','Fallecidos','Exceso días-cama','Reingresos &lt;7d'].includes(c[0]);
+    const cls=dn>0?(bad?'up':'down'):(dn<0?(bad?'down':'up'):'neutral');
+    const flag=c[0]==='EM Bruta'||c[0]==='IEMA'||c[0]==='Outliers sup.'?'var(--alarm)':c[0]==='Fallecidos'?'var(--warn)':'var(--ok)';
+    const arrow=dn>0?'▲':dn<0?'▼':'—';
+    const dval=typeof c[2]==='number'?(dn>0?'+':'')+c[2].toLocaleString('es'):c[2];
+    return `<div class="ind"><span class="flag" style="background:${flag}"></span>
+      <div class="iname">${c[0]}</div><div class="ival">${c[1]}</div>
+      <div class="idelta ${cls}">${arrow} ${dval} <span style="color:var(--ink-faint)">vs 2020</span></div>
+      <div class="iref">Ref: ${c[3]}</div></div>`;
+  }).join('');
+  // table
+  const heads=['Año','Egresos','PM GRD','UPH','EM Bruta','IEMA','Outliers %','Exceso d-cama','Días-cama','Fallec. %','Reingr. %'];
+  let html='<thead><tr>'+heads.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
+  MED.forEach(r=>{html+=`<tr><td>${r.y}</td><td>${r.eg.toLocaleString('es')}</td><td>${r.pm.toFixed(2)}</td><td>${r.uph.toLocaleString('es')}</td><td>${r.em}</td><td>${r.iema.toFixed(2)}</td><td>${r.out}%</td><td>${r.exc.toLocaleString('es')}</td><td>${r.dc.toLocaleString('es')}</td><td>${r.fal}%</td><td>${r.re}%</td></tr>`;});
+  html+='</tbody>';document.getElementById('gtable').innerHTML=html;
+  // charts
+  const mopt=(y1l,y2l)=>({responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#11181f',borderColor:'#243240',borderWidth:1,titleFont:{family:FM},bodyFont:{family:FM},padding:10}},
+    scales:{x:{grid:{color:'rgba(36,50,64,.5)'}},
+      y:{position:'left',grid:{color:'rgba(36,50,64,.5)'},title:{display:true,text:y1l,color:'#5e7385',font:{size:10}}},
+      y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:y2l,color:'#5e7385',font:{size:10}}}}});
+  const bar=(label,data,color,yID)=>({type:'bar',label,data,backgroundColor:color+'cc',borderRadius:4,yAxisID:yID||'y'});
+  const line=(label,data,color,yID)=>({type:'line',label,data,borderColor:color,borderWidth:2.5,pointRadius:3,pointBackgroundColor:color,tension:.25,yAxisID:yID||'y'});
+  const dash=(label,val,color,yID)=>({type:'line',label,data:MED.map(()=>val),borderColor:color,borderWidth:1.5,borderDash:[5,4],pointRadius:0,yAxisID:yID||'y'});
+
+  mEM=new Chart(document.getElementById('mEM'),{data:{labels:L,datasets:[
+    line('EM Bruta (días)',MED.map(r=>r.em),PAL.media,'y'),
+    line('IEMA',MED.map(r=>r.iema),'#ff5d5d','y1'),
+    dash('Norma 8 d',8,'#5e7385','y'),
+    dash('IEMA 1,0',1.0,'#5e7385','y1'),
+  ]},options:mopt('días','IEMA')});
+
+  mUPH=new Chart(document.getElementById('mUPH'),{data:{labels:L,datasets:[
+    bar('Egresos',MED.map(r=>r.eg),'#2dd4a7','y'),
+    line('UPH',MED.map(r=>r.uph),'#f4b942','y1'),
+  ]},options:mopt('egresos','UPH')});
+
+  mOut=new Chart(document.getElementById('mOut'),{data:{labels:L,datasets:[
+    line('Outliers sup. (%)',MED.map(r=>r.out),'#ff5d5d','y'),
+    bar('Exceso días-cama',MED.map(r=>r.exc),'#f4b942','y1'),
+    dash('Umbral 5%',5,'#5e7385','y'),
+  ]},options:mopt('outliers %','días-cama')});
+
+  mMort=new Chart(document.getElementById('mMort'),{data:{labels:L,datasets:[
+    line('Fallecidos (%)',MED.map(r=>r.fal),'#ff5d5d','y'),
+    line('Reingresos <7d (%)',MED.map(r=>r.re),PAL.media,'y'),
+  ]},options:mopt('%','% ')});
+
+  // what-if
+  const wi=()=>{
+    const obj=parseFloat(document.getElementById('iema').value);
+    document.getElementById('v_iema').textContent=obj.toFixed(2);
+    const cur=last.iema, dc=last.dc, emObjBruta=last.em*(obj/cur);
+    const freed=Math.max(0,dc*(1-obj/cur));
+    const extraEg=freed/emObjBruta;
+    const bedsEq=freed/365;
+    document.getElementById('wi-out').innerHTML=`
+      <div class="b"><div class="l">Días-cama liberados / año</div><div class="v">${Math.round(freed).toLocaleString('es')}</div><div class="s">desde IEMA ${cur.toFixed(2)} → ${obj.toFixed(2)}</div></div>
+      <div class="b"><div class="l">Equivale a camas</div><div class="v">${bedsEq.toFixed(1)}</div><div class="s">camas funcionando todo el año</div></div>
+      <div class="b"><div class="l">Egresos adicionales / año</div><div class="v">${Math.round(extraEg).toLocaleString('es')}</div><div class="s">más altas con la misma planta</div></div>
+      <div class="b"><div class="l">EM bruta resultante</div><div class="v">${emObjBruta.toFixed(1)}</div><div class="s">días (norma ≈ 8)</div></div>`;
+  };
+  document.getElementById('iema').addEventListener('input',wi);wi();
+}
+</script>
+</body>
+</html>
