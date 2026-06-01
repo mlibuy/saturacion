@@ -10,59 +10,67 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#0c1116; --bg2:#11181f; --panel:#151e27; --panel2:#1a2530;
-    --line:#243240; --ink:#e8eef3; --ink-dim:#8da0b0; --ink-faint:#5e7385;
-    --ok:#2dd4a7; --ok-d:#16876a; --warn:#f4b942; --alarm:#ff5d5d; --info:#9d7bff;
-    --media:#5aa9e6; --uti:#f4b942; --uci:#ff5d5d; --dom:#2dd4a7;
+    /* Paleta institucional ESP U. de Chile / Hospital del Salvador */
+    --navy:#1f3a93; --navy-d:#162a6b;
+    --sky:#2aa9e0; --orange:#f08a1d;
+    --bg:#ffffff; --bg2:#f4f7fb; --panel:#ffffff; --panel2:#f4f7fb;
+    --line:#dde5ef; --ink:#16243a; --ink-dim:#5a6b82; --ink-faint:#90a0b5;
+    --ok:#1f9d72; --ok-d:#16876a; --warn:#e8920c; --alarm:#d64545; --info:#1f3a93;
+    --media:#2aa9e0; --uti:#f08a1d; --uci:#d64545; --dom:#1f9d72;
     --mono:'IBM Plex Mono',monospace; --sans:'Archivo',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
-    background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(45,212,167,.08), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(90,169,230,.07), transparent 55%),
-      var(--bg);
+    background-color:var(--bg);
+    background-image:radial-gradient(circle, #dde5ef 1px, transparent 1.4px);
+    background-size:46px 46px;
     color:var(--ink); font-family:var(--sans); line-height:1.45;
     -webkit-font-smoothing:antialiased; padding:0 0 80px;
   }
   .wrap{max-width:1260px;margin:0 auto;padding:0 22px}
 
-  header{padding:42px 0 0}
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;
-    color:var(--ok);display:flex;align-items:center;gap:10px}
-  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);
-    box-shadow:0 0 0 4px rgba(45,212,167,.18);animation:pulse 2.4s infinite}
+  header{padding:30px 0 0}
+  .brand{display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .brand .logo-esp{font-weight:900;font-size:15px;line-height:1;color:var(--navy);letter-spacing:-.01em}
+  .brand .logo-esp .o{color:var(--orange)}
+  .brand .logo-esp small{display:block;font-weight:600;font-size:9px;letter-spacing:.06em;color:var(--ink-faint);margin-top:3px;text-transform:uppercase}
+  .brand .sep{width:1px;height:34px;background:var(--line)}
+  .brand .logo-hs{font-weight:800;font-size:13px;line-height:1.15;color:var(--sky);letter-spacing:.02em}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--orange);display:flex;align-items:center;gap:10px;font-weight:600}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);
+    box-shadow:0 0 0 4px rgba(240,138,29,.18);animation:pulse 2.4s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
-  h1{font-size:clamp(28px,4.6vw,50px);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:14px 0 6px}
-  h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--ok)}
+  h1{font-size:clamp(28px,4.6vw,50px);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:14px 0 6px;color:var(--navy)}
+  h1 em{font-family:'Fraunces',serif;font-style:italic;font-weight:500;color:var(--orange)}
   .byline{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);letter-spacing:.04em;margin-top:8px}
-  .byline b{color:var(--ink-dim);font-weight:600}
+  .byline b{color:var(--navy);font-weight:600}
 
   /* tabs */
-  .tabs{display:flex;gap:6px;margin-top:26px;border-bottom:1px solid var(--line)}
-  .tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--ink-dim);
+  .tabs{display:flex;gap:6px;margin-top:26px;border-bottom:2px solid var(--line);flex-wrap:wrap}
+  .tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--ink-dim);
     font-family:var(--sans);font-weight:700;font-size:14.5px;padding:13px 18px;cursor:pointer;
-    transition:.18s;margin-bottom:-1px;display:flex;align-items:center;gap:9px}
+    transition:.18s;margin-bottom:-2px;display:flex;align-items:center;gap:9px}
   .tab .ti{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--panel2);
     color:var(--ink-faint);padding:2px 7px;border-radius:5px}
-  .tab:hover{color:var(--ink)}
-  .tab.active{color:var(--ink);border-bottom-color:var(--ok)}
-  .tab.active .ti{background:rgba(45,212,167,.15);color:var(--ok)}
+  .tab:hover{color:var(--navy)}
+  .tab.active{color:var(--navy);border-bottom-color:var(--orange)}
+  .tab.active .ti{background:var(--navy);color:#fff}
 
   .view{display:none;padding-top:26px;animation:fade .35s}
   .view.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
   .lede{color:var(--ink-dim);max-width:740px;font-size:15px;margin-bottom:20px}
-  .lede b{color:var(--ink)}
+  .lede b{color:var(--navy)}
 
   /* balance bar */
   .balance{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1px;
     background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:8px}
   .bcell{background:var(--panel);padding:15px 17px}
   .bcell .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
-  .bcell .val{font-family:var(--mono);font-size:27px;font-weight:600;margin-top:4px}
+  .bcell .val{font-family:var(--mono);font-size:27px;font-weight:600;margin-top:4px;color:var(--navy)}
   .bcell .sub{font-size:11.5px;color:var(--ink-dim);margin-top:2px}
   .bcell.deficit .val{color:var(--alarm)} .bcell.ok .val{color:var(--ok)}
 
@@ -71,10 +79,10 @@
 
   .controls{position:sticky;top:14px}
   @media(max-width:960px){.controls{position:static}}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
   .panel h2{font-size:13px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;
-    color:var(--ink-dim);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-  .panel h2 .dot{width:7px;height:7px;border-radius:2px;background:var(--ok)}
+    color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:600}
+  .panel h2 .dot{width:7px;height:7px;border-radius:2px;background:var(--orange)}
 
   .presets{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
   .preset{border:1px solid var(--line);background:var(--panel2);color:var(--ink);
@@ -85,37 +93,37 @@
   .preset .tag{font-family:var(--mono);font-size:18px;font-weight:600;opacity:.5}
   .preset:hover{transform:translateX(3px)}
   .preset.active{box-shadow:0 0 0 1px currentColor inset}
-  .preset.A.active{border-color:var(--ok);background:rgba(45,212,167,.1);color:var(--ok)}
-  .preset.B.active{border-color:var(--media);background:rgba(90,169,230,.1);color:var(--media)}
-  .preset.C.active{border-color:var(--alarm);background:rgba(255,93,93,.1);color:var(--alarm)}
+  .preset.A.active{border-color:var(--ok);background:rgba(31,157,114,.1);color:var(--ok)}
+  .preset.B.active{border-color:var(--sky);background:rgba(42,169,224,.1);color:var(--sky)}
+  .preset.C.active{border-color:var(--alarm);background:rgba(214,69,69,.1);color:var(--alarm)}
   .preset.active span{color:inherit;opacity:.8}
   .preset .ttl{color:var(--ink)} .preset.active .ttl{color:inherit}
 
   .ctrl{margin-bottom:14px} .ctrl:last-child{margin-bottom:0}
   .ctrl .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
   .ctrl label{font-size:12.5px;color:var(--ink);font-weight:500}
-  .ctrl .num{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ok);
+  .ctrl .num{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--navy);
     background:var(--bg2);padding:1px 8px;border-radius:6px;min-width:52px;text-align:right;border:1px solid var(--line)}
   input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:5px;
     background:var(--line);outline:none;cursor:pointer}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
-    background:var(--ink);border:3px solid var(--ok);cursor:pointer;transition:.12s;box-shadow:0 1px 6px rgba(0,0,0,.5)}
+    background:#fff;border:3px solid var(--orange);cursor:pointer;transition:.12s;box-shadow:0 1px 5px rgba(22,36,58,.25)}
   input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18)}
-  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--ink);border:3px solid var(--ok);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--orange);cursor:pointer}
   .sect-divider{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:13px;margin:17px 0 13px;display:flex;align-items:center;gap:8px}
   .sect-divider i{width:9px;height:9px;border-radius:2px;display:inline-block}
 
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
   @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 15px 13px;position:relative;overflow:hidden}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 15px 13px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(22,36,58,.05)}
   .kpi .k-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
   .kpi .k-val{font-family:var(--mono);font-size:30px;font-weight:600;margin-top:6px;line-height:1}
   .kpi .k-sub{font-size:11px;color:var(--ink-dim);margin-top:5px}
   .kpi .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--ok);transition:width .5s,background .3s}
 
-  .chart-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;margin-bottom:20px}
-  .chart-card h3{font-size:15px;font-weight:800;margin-bottom:2px}
+  .chart-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;margin-bottom:20px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .chart-card h3{font-size:15px;font-weight:800;margin-bottom:2px;color:var(--navy)}
   .chart-card p{font-size:12.5px;color:var(--ink-dim);margin-bottom:14px;font-family:var(--mono)}
   .chart-box{position:relative;height:230px}
   .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-family:var(--mono);font-size:11.5px}
@@ -126,35 +134,35 @@
 
   .status{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;
     padding:7px 14px;border-radius:30px;margin-bottom:18px;font-weight:500}
-  .status.ok{background:rgba(45,212,167,.12);color:var(--ok);border:1px solid rgba(45,212,167,.3)}
-  .status.warn{background:rgba(244,185,66,.12);color:var(--warn);border:1px solid rgba(244,185,66,.3)}
-  .status.alarm{background:rgba(255,93,93,.12);color:var(--alarm);border:1px solid rgba(255,93,93,.35)}
+  .status.ok{background:rgba(31,157,114,.12);color:var(--ok);border:1px solid rgba(31,157,114,.3)}
+  .status.warn{background:rgba(232,146,12,.12);color:var(--warn);border:1px solid rgba(232,146,12,.3)}
+  .status.alarm{background:rgba(214,69,69,.12);color:var(--alarm);border:1px solid rgba(214,69,69,.35)}
   .status .blink{width:9px;height:9px;border-radius:50%;background:currentColor}
   .status.alarm .blink{animation:blink .8s infinite}
   @keyframes blink{50%{opacity:.2}}
 
   /* recommendations panel */
-  .reco{background:linear-gradient(180deg,rgba(255,93,93,.06),transparent);border:1px solid var(--line);
-    border-radius:16px;padding:22px;margin-bottom:20px}
-  .reco.show-c{border-color:rgba(255,93,93,.35)}
-  .reco h3{font-size:15px;font-weight:800;margin-bottom:4px}
+  .reco{background:linear-gradient(180deg,rgba(31,58,147,.04),transparent);border:1px solid var(--line);
+    border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .reco.show-c{border-color:rgba(214,69,69,.35);background:linear-gradient(180deg,rgba(214,69,69,.05),transparent)}
+  .reco h3{font-size:15px;font-weight:800;margin-bottom:4px;color:var(--navy)}
   .reco .ll{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-bottom:16px}
   .reco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
   .reco-item{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px 15px}
-  .reco-item .rh{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:5px}
-  .reco-item .rh .ic{font-family:var(--mono);font-size:11px;background:rgba(157,123,255,.15);color:var(--info);
+  .reco-item .rh{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:5px;color:var(--navy)}
+  .reco-item .rh .ic{font-family:var(--mono);font-size:11px;background:rgba(31,58,147,.1);color:var(--info);
     padding:1px 6px;border-radius:4px}
   .reco-item p{font-size:12px;color:var(--ink-dim);font-family:var(--sans);margin:0}
 
   /* ---------- Medicine tab ---------- */
-  .ctx-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:22px}
-  .ctx-card .meta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
-  .ctx-card h3{font-size:19px;font-weight:800;margin-bottom:8px}
+  .ctx-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:22px;box-shadow:0 1px 3px rgba(22,36,58,.05);border-left:4px solid var(--sky)}
+  .ctx-card .meta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;font-weight:600}
+  .ctx-card h3{font-size:19px;font-weight:800;margin-bottom:8px;color:var(--navy)}
   .ctx-card p{font-size:13.5px;color:var(--ink-dim);max-width:820px}
   .ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin-bottom:22px}
-  .ind{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+  .ind{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;box-shadow:0 1px 3px rgba(22,36,58,.05)}
   .ind .iname{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
-  .ind .ival{font-family:var(--mono);font-size:28px;font-weight:600;margin:6px 0 2px}
+  .ind .ival{font-family:var(--mono);font-size:28px;font-weight:600;margin:6px 0 2px;color:var(--navy)}
   .ind .idelta{font-family:var(--mono);font-size:11.5px}
   .ind .iref{font-size:11px;color:var(--ink-dim);margin-top:7px;border-top:1px dashed var(--line);padding-top:7px}
   .ind .flag{position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%}
@@ -165,27 +173,102 @@
   table.gt th{color:var(--ink-faint);font-weight:600;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
   table.gt td:first-child,table.gt th:first-child{text-align:left;color:var(--ink)}
   table.gt tr:hover td{background:var(--panel2)}
-  .tbl-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:22px}
+  .tbl-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:22px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
 
-  .whatif{background:linear-gradient(180deg,rgba(45,212,167,.06),transparent);border:1px solid rgba(45,212,167,.3);
-    border-radius:16px;padding:22px;margin-bottom:22px}
-  .whatif h3{font-size:16px;font-weight:800;margin-bottom:4px}
+  .whatif{background:linear-gradient(180deg,rgba(42,169,224,.06),transparent);border:1px solid rgba(42,169,224,.3);
+    border-radius:16px;padding:22px;margin-bottom:22px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .whatif h3{font-size:16px;font-weight:800;margin-bottom:4px;color:var(--navy)}
   .whatif .ll{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-bottom:18px}
   .wi-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:18px}
-  .wi-out .b{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .wi-out .b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
   .wi-out .b .l{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
-  .wi-out .b .v{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--ok);margin-top:5px}
+  .wi-out .b .v{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--sky);margin-top:5px}
   .wi-out .b .s{font-size:11px;color:var(--ink-dim);margin-top:4px}
+
+  /* ---------- Casos de estudio (tab 3) ---------- */
+  .case-intro{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--orange);
+    border-radius:16px;padding:22px;margin-bottom:24px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .case-intro h3{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
+  .case-intro p{font-size:13.5px;color:var(--ink-dim);max-width:840px}
+  .case-intro .howto{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-top:12px;
+    display:flex;align-items:center;gap:8px}
+  .case-intro .howto::before{content:"▸";color:var(--orange)}
+
+  .case{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-bottom:20px;
+    overflow:hidden;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .case-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:16px}
+  .case-head .nseq{font-family:var(--mono);font-weight:700;font-size:13px;color:#fff;background:var(--navy);
+    min-width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .case-head .ch-body{flex:1}
+  .case-head .ch-svc{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--orange);font-weight:600}
+  .case-head h4{font-size:17px;font-weight:800;color:var(--navy);margin:3px 0 6px}
+  .case-head .ch-desc{font-size:13px;color:var(--ink-dim);line-height:1.5}
+  .case-mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+  .case-mini .m{font-family:var(--mono);font-size:11px;background:var(--bg2);border:1px solid var(--line);
+    border-radius:7px;padding:3px 9px;color:var(--ink-dim)}
+  .case-mini .m b{color:var(--navy)}
+  .case-mini .m.bad b{color:var(--alarm)}
+
+  .case-body{padding:8px 22px 18px}
+  .q{border-bottom:1px dashed var(--line)}
+  .q:last-child{border-bottom:none}
+  .q-btn{width:100%;background:none;border:none;text-align:left;padding:15px 0;cursor:pointer;
+    display:flex;align-items:center;gap:12px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink)}
+  .q-btn:hover{color:var(--navy)}
+  .q-btn .qi{font-family:var(--mono);font-size:11px;color:var(--orange);font-weight:700;flex-shrink:0}
+  .q-btn .chev{margin-left:auto;color:var(--ink-faint);transition:transform .25s;flex-shrink:0;font-size:13px}
+  .q.open .q-btn .chev{transform:rotate(90deg);color:var(--orange)}
+  .q-ans{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .q.open .q-ans{max-height:600px}
+  .q-ans-inner{padding:0 0 18px 30px;font-size:13px;color:var(--ink-dim);line-height:1.6}
+  .q-ans-inner .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:600;
+    padding:2px 8px;border-radius:20px;margin:0 4px 6px 0;background:rgba(31,58,147,.08);color:var(--navy)}
+  .q-ans-inner b{color:var(--navy)}
+  .q-ans-inner .keypt{background:var(--bg2);border-left:3px solid var(--sky);border-radius:0 8px 8px 0;
+    padding:10px 14px;margin-top:10px;font-size:12.5px}
 
   footer{margin-top:36px;padding-top:22px;border-top:1px solid var(--line);
     font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);line-height:1.7}
-  footer b{color:var(--ink-dim);font-weight:600}
+  footer b{color:var(--navy);font-weight:600}
+
+  /* ---------- La matemática (tab 4) ---------- */
+  .math-sec{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
+  .math-sec.t1{border-top:4px solid var(--sky)}
+  .math-sec.t2{border-top:4px solid var(--orange)}
+  .math-sec.t3{border-top:4px solid var(--navy)}
+  .math-sec .tag-sec{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--orange);font-weight:600;margin-bottom:6px}
+  .math-sec h3{font-size:19px;font-weight:800;color:var(--navy);margin-bottom:6px}
+  .math-sec .intro{font-size:13.5px;color:var(--ink-dim);margin-bottom:18px;max-width:840px}
+  .math-block{margin-bottom:18px}
+  .math-block:last-child{margin-bottom:0}
+  .math-block h4{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:7px;display:flex;align-items:center;gap:9px}
+  .math-block h4 .step{font-family:var(--mono);font-size:11px;color:#fff;background:var(--sky);
+    min-width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+  .formula{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--sky);
+    border-radius:0 10px 10px 0;padding:13px 16px;font-family:var(--mono);font-size:13.5px;color:var(--navy);
+    margin:6px 0;line-height:1.7;overflow-x:auto}
+  .formula .var{color:var(--orange);font-weight:600}
+  .formula .cm{color:var(--ink-faint);font-size:11.5px}
+  .math-block p{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:6px}
+  .math-block p b{color:var(--navy)}
+  .num-ex{background:rgba(31,157,114,.06);border:1px solid rgba(31,157,114,.25);border-radius:10px;
+    padding:12px 15px;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);line-height:1.7}
+  .num-ex b{color:var(--ok-d)}
+  .math-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);background:var(--bg2);
+    border-radius:10px;padding:14px 16px;line-height:1.65;margin-top:8px}
+  .math-note b{color:var(--navy)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
+    <div class="brand">
+      <div class="logo-esp">Escuela <span class="o">de Salud</span><br><span class="o">Pública</span><small>Dr. Salvador Allende · U. de Chile</small></div>
+      <div class="sep"></div>
+      <div class="logo-hs">Hospital<br>del Salvador</div>
+    </div>
     <div class="eyebrow">Gestión y Administración en Salud · Modelo de flujo hospitalario</div>
     <h1>El hospital como <em>sistema de flujo</em></h1>
     <div class="byline">Desarrollado por <b>Matías Libuy</b> · herramienta educativa de simulación</div>
@@ -193,12 +276,13 @@
     <div class="tabs">
       <button class="tab active" data-view="urg"><span class="ti">1</span>Urgencia · saturación y flujo</button>
       <button class="tab" data-view="med"><span class="ti">2</span>Servicio cerrado · Medicina Interna (GRD)</button>
+      <button class="tab" data-view="casos"><span class="ti">3</span>Casos de estudio · análisis</button>
     </div>
   </header>
 
   <!-- ============================== VIEW 1: URGENCIA ============================== -->
   <section class="view active" id="view-urg">
-    <p class="lede">La Urgencia funciona como un <b>estanque</b>: entra un caudal de pacientes y debe drenar por varias válvulas. Quienes necesitan cama solo salen si hay cama libre <b>río abajo</b>; si no la hay, hacen <b>boarding</b> (esperan en la Urgencia). Cuando las válvulas que sacan pacientes se cierran, la Urgencia se satura aunque la entrada nunca cambie. Elige un escenario y mueve las perillas.</p>
+    <p class="lede">La Urgencia funciona como un <b>estanque</b>: entra un caudal de pacientes y debe drenar por varias válvulas. Quienes necesitan cama solo salen si hay cama libre <b>río abajo</b>; si no la hay, hacen <b>boarding</b> (esperan en la Urgencia). Cuando las válvulas que sacan pacientes se cierran, la Urgencia se satura aunque la entrada nunca cambie. Mueve las perillas y observa los indicadores en vivo.</p>
 
     <div class="balance" id="balance"></div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin:8px 0 0">
@@ -207,44 +291,47 @@
     <div class="grid">
       <div class="controls">
         <div class="panel">
-          <h2><span class="dot"></span>Escenarios</h2>
-          <div class="presets">
-            <button class="preset A active" id="pA"><span><b class="ttl">Situación A — Base normal</b><span>Hospital bien dotado, tenso pero fluye</span></span><span class="tag">A</span></button>
-            <button class="preset B" id="pB"><span><b class="ttl">Situación B — Óptima</b><span>Camas holgadas + estadías cortas</span></span><span class="tag">B</span></button>
-            <button class="preset C" id="pC"><span><b class="ttl">Situación C — Colapso</b><span>Pocas camas + estadías prolongadas</span></span><span class="tag">C</span></button>
-          </div>
+          <h2><span class="dot"></span>Perillas de la Urgencia</h2>
 
           <div class="sect-divider"><i style="background:var(--ok)"></i>Entrada a la Urgencia</div>
           <div class="ctrl"><div class="row"><label>Admisiones / día</label><span class="num" id="v_arr">150</span></div><input type="range" id="arr" min="80" max="260" step="5" value="150"></div>
           <div class="ctrl"><div class="row"><label>% que se hospitaliza</label><span class="num" id="v_hosp">20%</span></div><input type="range" id="hosp" min="5" max="40" step="1" value="20"></div>
-          <div class="ctrl"><div class="row"><label>LWBS base (sistema sano)</label><span class="num" id="v_lwbs">10%</span></div><input type="range" id="lwbs" min="0" max="25" step="1" value="10"></div>
-          <div class="ctrl"><div class="row"><label>LWBS máximo (con colapso)</label><span class="num" id="v_lwbsmax">40%</span></div><input type="range" id="lwbsmax" min="10" max="70" step="1" value="40"></div>
+          <div class="ctrl"><div class="row"><label>LWBS base (abandono)</label><span class="num" id="v_lwbs">10%</span></div><input type="range" id="lwbs" min="0" max="40" step="1" value="10">
+          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">Abandono cuando la Urgencia fluye. Al saturarse sube solo hacia ~40-45%.</p></div>
 
           <div class="sect-divider"><i style="background:var(--media)"></i>Camas por servicio</div>
           <div class="ctrl"><div class="row"><label>Camas medias</label><span class="num" id="v_bM">120</span></div><input type="range" id="bM" min="20" max="300" step="5" value="120"></div>
           <div class="ctrl"><div class="row"><label>Camas UTI (intermedio)</label><span class="num" id="v_bT">28</span></div><input type="range" id="bT" min="5" max="80" step="1" value="28"></div>
           <div class="ctrl"><div class="row"><label>Camas UCI (intensivo)</label><span class="num" id="v_bU">10</span></div><input type="range" id="bU" min="2" max="40" step="1" value="10"></div>
-          <div class="ctrl"><div class="row"><label>Camas hosp. domiciliaria</label><span class="num" id="v_bD">60</span></div><input type="range" id="bD" min="0" max="200" step="5" value="60"></div>
 
-          <div class="sect-divider"><i style="background:var(--ok)"></i>Válvula río abajo</div>
-          <div class="ctrl"><div class="row"><label>Capacidad física de la Urgencia</label><span class="num" id="v_ed">35</span></div><input type="range" id="ed" min="8" max="80" step="1" value="35"></div>
+          <div class="sect-divider"><i style="background:var(--ok)"></i>Válvulas de salida</div>
           <div class="ctrl"><div class="row"><label>% camas dotación ofrecidas / día</label><span class="num" id="v_off">18%</span></div><input type="range" id="off" min="2" max="40" step="1" value="18"></div>
+          <div class="ctrl"><div class="row"><label>→ Pabellón (cirugía) / día</label><span class="num" id="v_pab">8</span></div><input type="range" id="pab" min="0" max="20" step="1" value="8"></div>
+          <div class="ctrl"><div class="row"><label>→ Traslado UGCC / Ley de Urgencia / día</label><span class="num" id="v_ugcc">3</span></div><input type="range" id="ugcc" min="0" max="20" step="1" value="3"></div>
+          <div class="ctrl"><div class="row"><label>→ Rescate hosp. domiciliaria / día</label><span class="num" id="v_hdom">7</span></div><input type="range" id="hdom" min="0" max="20" step="1" value="7"></div>
+          <div class="ctrl"><div class="row"><label>→ Altas completadas en Urgencia / día</label><span class="num" id="v_edadm">7</span></div><input type="range" id="edadm" min="0" max="15" step="1" value="7">
+          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">Pacientes que completan su hospitalización en un box (ocupan espacio durante su estadía y luego liberan).</p></div>
+
+          <div class="sect-divider"><i style="background:var(--uci)"></i>Espacio físico de la Urgencia</div>
+          <div class="ctrl"><div class="row"><label>Capacidad física (box disponibles)</label><span class="num" id="v_ed">100</span></div><input type="range" id="ed" min="20" max="140" step="5" value="100"></div>
+          <div class="ctrl"><div class="row"><label>Umbral de saturación (se detiene atención)</label><span class="num" id="v_sat">80</span></div><input type="range" id="sat" min="20" max="120" step="5" value="80"></div>
+          <div class="ctrl"><div class="row"><label>Estadía en Urgencia (hosp. en box)</label><span class="num" id="v_edlos">3 d</span></div><input type="range" id="edlos" min="1" max="6" step="0.5" value="3"></div>
+          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.45"><b style="color:var(--uci)">Ojo:</b> los box <b>no sacan pacientes</b> — solo definen cuánto boarding cabe. Más box sin flujo de salida no resuelve nada: solo permite que la cola crezca. El cuello de botella real es la cama y el flujo, no el espacio.</p>
 
           <div class="sect-divider"><i style="background:var(--media)"></i>Estadías promedio (días)</div>
           <div class="ctrl"><div class="row"><label>Cama media</label><span class="num" id="v_losM">7</span></div><input type="range" id="losM" min="3" max="20" step="0.5" value="7"></div>
           <div class="ctrl"><div class="row"><label>UTI</label><span class="num" id="v_losT">10</span></div><input type="range" id="losT" min="4" max="25" step="0.5" value="10"></div>
           <div class="ctrl"><div class="row"><label>UCI</label><span class="num" id="v_losU">14</span></div><input type="range" id="losU" min="5" max="30" step="0.5" value="14"></div>
-          <div class="ctrl"><div class="row"><label>Domiciliaria</label><span class="num" id="v_losD">12</span></div><input type="range" id="losD" min="3" max="21" step="0.5" value="12"></div>
 
           <div class="sect-divider"><i style="background:var(--uci)"></i>Destino de los hospitalizados</div>
           <div class="ctrl"><div class="row"><label>→ UCI</label><span class="num" id="v_pU">1%</span></div><input type="range" id="pU" min="0" max="15" step="0.5" value="1"></div>
           <div class="ctrl"><div class="row"><label>→ UTI</label><span class="num" id="v_pT">10%</span></div><input type="range" id="pT" min="0" max="40" step="1" value="10"></div>
-          <div class="ctrl"><div class="row"><label>→ Domiciliaria</label><span class="num" id="v_pD">20%</span></div><input type="range" id="pD" min="0" max="60" step="1" value="20"></div>
           <div class="ctrl"><div class="row"><label>→ Cama media <span style="color:var(--ink-faint);font-family:var(--mono);font-size:11px">(resto)</span></label><span class="num" id="v_pM">69%</span></div></div>
 
           <div class="sect-divider"><i style="background:var(--ink-faint)"></i>Simulación</div>
           <div class="ctrl"><div class="row"><label>Ocupación inicial</label><span class="num" id="v_init">80%</span></div><input type="range" id="init" min="0" max="100" step="5" value="80"></div>
-          <div class="ctrl"><div class="row"><label>Días a simular</label><span class="num" id="v_days">120</span></div><input type="range" id="days" min="14" max="240" step="1" value="120"></div>
+          <div class="ctrl"><div class="row"><label>Días a simular <span style="color:var(--ink-faint);font-family:var(--mono);font-size:10px">horizonte</span></label><span class="num" id="v_days">120</span></div><input type="range" id="days" min="14" max="240" step="1" value="120">
+          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">Cuántos días dura la "película": el eje horizontal de los gráficos. La saturación se acumula con el tiempo, así que más días muestran cómo evoluciona hasta estabilizarse.</p></div>
         </div>
       </div>
 
@@ -267,7 +354,6 @@
               <span><i style="background:var(--media)"></i>Media</span>
               <span><i style="background:var(--uti)"></i>UTI</span>
               <span><i style="background:var(--uci)"></i>UCI</span>
-              <span><i style="background:var(--dom)"></i>Domic.</span>
             </div>
           </div>
           <div class="chart-card">
@@ -277,10 +363,34 @@
           </div>
         </div>
 
-        <div class="chart-card">
-          <h3>Tasa de LWBS — se van sin ser atendidos (%)</h3>
-          <p>Indicador de seguridad que se dispara cuando la Urgencia colapsa.</p>
-          <div class="chart-box"><canvas id="chL"></canvas></div>
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Tasa de LWBS — se van sin ser atendidos (%)</h3>
+            <p>Indicador de seguridad que se dispara cuando la Urgencia colapsa.</p>
+            <div class="chart-box"><canvas id="chL"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Salida a pabellón / día</h3>
+            <p>Pacientes que van directo a cirugía: una válvula que drena la Urgencia.</p>
+            <div class="chart-box"><canvas id="chP"></canvas></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Rescate del boarding · UGCC y domiciliaria</h3>
+            <p>Pacientes sacados de la cola hacia la red o al domicilio: válvulas de rescate.</p>
+            <div class="chart-box"><canvas id="chU"></canvas></div>
+            <div class="legend">
+              <span><i style="background:var(--navy)"></i>UGCC / Ley Urgencia</span>
+              <span><i style="background:var(--dom)"></i>Hosp. domiciliaria</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Altas completadas EN la Urgencia · día</h3>
+            <p>Hospitalización completa en un box porque la cama nunca llegó: síntoma de saturación.</p>
+            <div class="chart-box"><canvas id="chE"></canvas></div>
+          </div>
         </div>
 
         <div class="reco" id="reco">
@@ -292,91 +402,113 @@
     </div>
   </section>
 
-  <!-- ============================== VIEW 2: MEDICINA INTERNA ============================== -->
+  <!-- ============================== VIEW 2: SERVICIO GENÉRICO (interactivo) ============================== -->
   <section class="view" id="view-med">
-    <p class="lede">Cambiamos de perspectiva: ahora estamos <b>dentro</b> de un servicio de atención cerrada. La Urgencia presiona por una cama; este servicio decide cuán rápido la libera. Aquí se gestiona con los <b>indicadores GRD</b> del taller. Caso: <b>Hospital Alicia Rodríguez, Servicio de Medicina Interna</b> (250 camas, alta complejidad).</p>
+    <p class="lede">Cambiamos de perspectiva: ahora estamos <b>dentro</b> de un servicio de atención cerrada genérico (Medicina Interna). La Urgencia presiona por una cama; este servicio decide cuán rápido la libera. Mueve las perillas de <b>estadía</b> y <b>outliers</b> y observa cómo cambian los indicadores GRD y cuántas camas se liberan para la Urgencia. <b>Es un servicio hipotético para experimentar</b>, no un caso real.</p>
 
     <div class="ctx-card">
-      <div class="meta">Caso · Santiago · 250 camas de complejidad media</div>
-      <h3>El servicio que no logra dar de alta</h3>
-      <p>La norma ministerial fija una estadía media bruta cercana a <b>8 días</b> para este tipo de servicio. En cinco años la estadía media subió de 10,1 a 11,4 días y el IEMA pasó de 1,06 a 1,12: las hospitalizaciones duran cada vez <b>más de lo esperado</b> para su complejidad. Cada día de más es una cama que la Urgencia no recibe. Los indicadores muestran un servicio que produce más, con casos algo más complejos, pero que pierde eficiencia interna.</p>
+      <div class="meta">Servicio hipotético · 250 camas de complejidad media</div>
+      <h3>¿Cómo la estadía y los outliers afectan la eficiencia?</h3>
+      <p>La norma ministerial fija una estadía media bruta cercana a <b>8 días</b> para este tipo de servicio. Cada día de estadía de más es una cama que la Urgencia no recibe. Usa las perillas para ver el efecto directo sobre los días-cama, el exceso de estancias y las camas que se podrían liberar.</p>
     </div>
 
-    <div class="ind-grid" id="ind-grid"></div>
-
-    <div class="two-col">
-      <div class="chart-card">
-        <h3>Estadía media bruta e IEMA</h3>
-        <p>Eficiencia interna: cuánto se aleja la estadía de lo esperado.</p>
-        <div class="chart-box"><canvas id="mEM"></canvas></div>
-        <div class="legend">
-          <span><i style="background:var(--media)"></i>EM Bruta (días)</span>
-          <span><i style="background:var(--alarm)"></i>IEMA</span>
-          <span><i style="background:var(--ink-faint)"></i>Norma 8 d / IEMA 1,0</span>
+    <div class="grid">
+      <div class="controls">
+        <div class="panel">
+          <h2><span class="dot"></span>Perillas del servicio</h2>
+          <div class="ctrl"><div class="row"><label>Egresos / año</label><span class="num" id="v_meg">12.000</span></div><input type="range" id="meg" min="4000" max="20000" step="250" value="12000"></div>
+          <div class="ctrl"><div class="row"><label>PM GRD (complejidad)</label><span class="num" id="v_mpm">1,30</span></div><input type="range" id="mpm" min="0.7" max="2.5" step="0.01" value="1.30"></div>
+          <div class="sect-divider"><i style="background:var(--media)"></i>Eficiencia interna</div>
+          <div class="ctrl"><div class="row"><label>Estadía media bruta (días)</label><span class="num" id="v_mem">11,0</span></div><input type="range" id="mem" min="5" max="16" step="0.1" value="11.0"></div>
+          <div class="ctrl"><div class="row"><label>Estadía esperada por GRD (días)</label><span class="num" id="v_mexp">9,8</span></div><input type="range" id="mexp" min="5" max="14" step="0.1" value="9.8">
+            <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">El IEMA sale de comparar la estadía real con esta esperada. IEMA = bruta ÷ esperada.</p></div>
+          <div class="ctrl"><div class="row"><label>Outliers superiores (%)</label><span class="num" id="v_mout">9,0%</span></div><input type="range" id="mout" min="0" max="20" step="0.1" value="9.0"></div>
+          <div class="sect-divider"><i style="background:var(--uci)"></i>Calidad</div>
+          <div class="ctrl"><div class="row"><label>Mortalidad (%)</label><span class="num" id="v_mfal">6,5%</span></div><input type="range" id="mfal" min="0" max="18" step="0.1" value="6.5"></div>
+          <div class="ctrl"><div class="row"><label>Reingresos &lt;7d (%)</label><span class="num" id="v_mre">2,0%</span></div><input type="range" id="mre" min="0" max="15" step="0.1" value="2.0"></div>
         </div>
       </div>
-      <div class="chart-card">
-        <h3>Egresos y producción (UPH)</h3>
-        <p>Volumen de actividad ajustado por complejidad (UPH = Egresos × PM GRD).</p>
-        <div class="chart-box"><canvas id="mUPH"></canvas></div>
-        <div class="legend">
-          <span><i style="background:var(--ok)"></i>Egresos</span>
-          <span><i style="background:var(--uti)"></i>UPH</span>
+
+      <div class="results">
+        <div class="ind-grid" id="ind-grid"></div>
+
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Estadía bruta vs esperada e IEMA</h3>
+            <p>Eficiencia interna: cuánto se aleja la estadía real de lo esperado.</p>
+            <div class="chart-box"><canvas id="mEM"></canvas></div>
+            <div class="legend">
+              <span><i style="background:var(--media)"></i>EM Bruta</span>
+              <span><i style="background:var(--orange)"></i>EM Esperada</span>
+              <span><i style="background:var(--ink-faint)"></i>Norma 8 d</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Días-cama: totales vs exceso</h3>
+            <p>El exceso son las camas-día consumidas de más por sobre lo esperado.</p>
+            <div class="chart-box"><canvas id="mDC"></canvas></div>
+            <div class="legend">
+              <span><i style="background:var(--media)"></i>Días-cama esperados</span>
+              <span><i style="background:var(--uci)"></i>Exceso (ineficiencia)</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="two-col">
-      <div class="chart-card">
-        <h3>Outliers superiores y exceso de estancias</h3>
-        <p>Pacientes "varados" y los días-cama que consumen de más.</p>
-        <div class="chart-box"><canvas id="mOut"></canvas></div>
-        <div class="legend">
-          <span><i style="background:var(--alarm)"></i>Outliers sup. (%)</span>
-          <span><i style="background:var(--uti)"></i>Exceso días-cama</span>
+        <div class="two-col">
+          <div class="chart-card">
+            <h3>Outliers superiores (%)</h3>
+            <p>Pacientes "varados". Sobre 5% indica problema de gestión de camas.</p>
+            <div class="chart-box"><canvas id="mOut"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Producción: UPH = Egresos × PM GRD</h3>
+            <p>Volumen de actividad ajustado por complejidad.</p>
+            <div class="chart-box"><canvas id="mUPH"></canvas></div>
+          </div>
         </div>
-      </div>
-      <div class="chart-card">
-        <h3>Mortalidad y reingresos &lt; 7 días</h3>
-        <p>Señales de complejidad y de continuidad del cuidado tras el alta.</p>
-        <div class="chart-box"><canvas id="mMort"></canvas></div>
-        <div class="legend">
-          <span><i style="background:var(--uci)"></i>Fallecidos (%)</span>
-          <span><i style="background:var(--media)"></i>Reingresos &lt;7d (%)</span>
+
+        <div class="whatif">
+          <h3>¿Qué pasa si recuperamos la eficiencia?</h3>
+          <div class="ll">Si el servicio acercara su IEMA al valor objetivo, ¿cuántas camas-día se liberarían para la Urgencia?</div>
+          <div class="ctrl" style="max-width:420px">
+            <div class="row"><label>IEMA objetivo</label><span class="num" id="v_iema">1.00</span></div>
+            <input type="range" id="iema" min="1.00" max="1.40" step="0.01" value="1.00">
+          </div>
+          <div class="wi-out" id="wi-out"></div>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:14px;line-height:1.6">
+            Estimación: días-cama liberados ≈ días-cama totales × (1 − IEMA objetivo ÷ IEMA actual). Egresos adicionales = días-cama liberados ÷ estadía objetivo. Valores referenciales con fines docentes.</p>
         </div>
-      </div>
-    </div>
 
-    <div class="tbl-wrap">
-      <table class="gt" id="gtable"></table>
-    </div>
-
-    <div class="whatif">
-      <h3>¿Qué pasa si recuperamos la eficiencia? (año 2024)</h3>
-      <div class="ll">Si el servicio acercara su IEMA al valor objetivo, ¿cuántas camas-día se liberarían para la Urgencia?</div>
-      <div class="ctrl" style="max-width:420px">
-        <div class="row"><label>IEMA objetivo</label><span class="num" id="v_iema">1.00</span></div>
-        <input type="range" id="iema" min="1.00" max="1.12" step="0.01" value="1.00">
-      </div>
-      <div class="wi-out" id="wi-out"></div>
-      <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:14px;line-height:1.6">
-        Estimación: días-cama liberados ≈ días-cama totales × (1 − IEMA objetivo ÷ IEMA actual). Egresos adicionales = días-cama liberados ÷ estadía objetivo. Valores referenciales con fines docentes.</p>
-    </div>
-
-    <div class="reco show-c">
-      <h3>Lectura de gestión · Medicina Interna</h3>
-      <div class="ll">Tres indicadores para fundamentar una propuesta (formato policy brief del taller)</div>
-      <div class="reco-grid">
-        <div class="reco-item"><div class="rh">IEMA &amp; EM Bruta <span class="ic">eficiencia</span></div><p>IEMA 1,12 y EM bruta 11,4 d (norma ≈ 8) indican estancias más largas de lo esperado. La causa típica no es clínica sino organizacional: gestión de camas, altas tardías y coordinación con la red.</p></div>
-        <div class="reco-item"><div class="rh">Outliers &amp; exceso <span class="ic">camas</span></div><p>9,3% de outliers superiores (norma &lt;5%) y ~11.800 días-cama de exceso. Una unidad de gestión de altas y criterios de egreso explícitos atacan directamente este stock de pacientes varados.</p></div>
-        <div class="reco-item"><div class="rh">Reingresos &lt;7d <span class="ic">red</span></div><p>Aún bajos (1,9%), pero al acelerar altas hay que vigilarlos: una alta prematura sin seguimiento ambulatorio devuelve al paciente por Urgencia y empeora el flujo global.</p></div>
+        <div class="reco show-c">
+          <h3>Cómo leer estos indicadores</h3>
+          <div class="ll">La misma lógica del policy brief: fundamentar con al menos tres indicadores cruzados</div>
+          <div class="reco-grid">
+            <div class="reco-item"><div class="rh">IEMA &amp; EM Bruta <span class="ic">eficiencia</span></div><p>IEMA &gt;1 y EM bruta sobre la norma de 8 d indican estancias más largas de lo esperado. La causa típica no es clínica sino organizacional: gestión de camas, altas tardías y coordinación con la red.</p></div>
+            <div class="reco-item"><div class="rh">Outliers &amp; exceso <span class="ic">camas</span></div><p>Outliers sobre 5% señalan pacientes "varados". El exceso de días-cama cuantifica su impacto real. Una unidad de gestión de altas y criterios de egreso explícitos atacan este stock.</p></div>
+            <div class="reco-item"><div class="rh">Reingresos &lt;7d <span class="ic">red</span></div><p>Al acelerar altas hay que vigilarlos: una alta prematura sin seguimiento ambulatorio devuelve al paciente por Urgencia y empeora el flujo global.</p></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- ============================== VIEW 3: CASOS DE ESTUDIO ============================== -->
+  <section class="view" id="view-casos">
+    <p class="lede">Cuatro servicios clínicos, cuatro problemas de gestión distintos. Cada caso presenta su relato, sus indicadores GRD y preguntas de análisis. Las respuestas son <b>orientaciones para la discusión</b> — úsalas para guiar el debate, no como solución única. Inspirados en el Taller 3 de Gestión y Administración en Salud.</p>
+
+    <div class="case-intro">
+      <h3>Cómo trabajar estos casos</h3>
+      <p>Para cada servicio: lee el relato y los indicadores, discute en grupo la pregunta, y recién entonces despliega la orientación. El objetivo es identificar el <b>problema central</b> del servicio y fundamentar una propuesta con al menos tres indicadores — la misma lógica del policy brief del taller.</p>
+      <div class="howto">Haz clic en cada pregunta para desplegar una orientación de análisis</div>
+    </div>
+
+    <div id="cases-container"></div>
+  </section>
+
   <footer>
-    <b>Cómo leer la pestaña Urgencia.</b> Cada día entran las admisiones; una parte se va de alta (válvula buena), otra se va sin ser atendida — LWBS — y el resto necesita cama. Si no hay cama libre, el paciente hace boarding. El censo de boarding es un número de 24 h; cuando supera la capacidad física de la Urgencia, el exceso se deriva (diversión).<br>
-    <b>Cómo leer la pestaña Medicina.</b> Mismos pacientes, otra punta del sistema. La estadía media y el IEMA deciden cuán rápido se liberan camas — es decir, cuánto alivio recibe la Urgencia.<br>
+    <b>Cómo leer la pestaña Urgencia.</b> Cada día entran las admisiones; una parte se va de alta, otra hace LWBS, otra va a pabellón (cirugía) y el resto necesita cama. Si no hay cama libre, el paciente hace boarding. El censo de boarding es un número de 24 h; cuando supera la capacidad física, el exceso se deriva.<br>
+    <b>Cómo leer la pestaña Servicio cerrado.</b> Un servicio hipotético de Medicina Interna: mueve las perillas de estadía y outliers y observa cómo cambian los indicadores GRD. La estadía media y el IEMA deciden cuán rápido se liberan camas — es decir, cuánto alivio recibe la Urgencia.<br>
+    <b>Casos de estudio.</b> Cuatro servicios con problemas distintos, para analizar en grupo con la lógica del policy brief: identificar el problema central y fundamentar una propuesta con al menos tres indicadores.<br>
     <b>Modelo educativo</b> — simulación determinística de flujo en tiempo discreto (1 paso = 1 día). No reemplaza estadística operacional real. · Desarrollado por <b>Matías Libuy</b>.
   </footer>
 
@@ -390,98 +522,153 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   t.classList.add('active');
   document.getElementById('view-'+t.dataset.view).classList.add('active');
   if(t.dataset.view==='med') initMed();
+  if(t.dataset.view==='casos') initCasos();
 });
 
 /* ===================== URGENCIA ===================== */
-const uIds=['arr','hosp','lwbs','lwbsmax','bM','bT','bU','bD','ed','off','losM','losT','losU','losD','pU','pT','pD','init','days'];
+const uIds=['arr','hosp','lwbs','bM','bT','bU','ed','sat','off','pab','ugcc','hdom','edadm','edlos','losM','losT','losU','pU','pT','init','days'];
 
 function readU(){
   const g=id=>parseFloat(document.getElementById(id).value);
-  const s={arrivals:g('arr'),pHosp:g('hosp')/100,lwbsBase:g('lwbs')/100,lwbsMax:g('lwbsmax')/100,
-    beds:{media:g('bM'),uti:g('bT'),uci:g('bU'),dom:g('bD')},
-    edCap:g('ed'),offeredPct:g('off')/100,
-    los:{media:g('losM'),uti:g('losT'),uci:g('losU'),dom:g('losD')},
-    pUCI:g('pU')/100,pUTI:g('pT')/100,pDom:g('pD')/100,
+  const s={arrivals:g('arr'),pHosp:g('hosp')/100,lwbsBase:g('lwbs')/100,
+    beds:{media:g('bM'),uti:g('bT'),uci:g('bU')},
+    edCap:g('ed'),satThresh:g('sat'),offeredPct:g('off')/100,pab:g('pab'),ugcc:g('ugcc'),hdom:g('hdom'),edAdm:g('edadm'),edLOS:g('edlos'),
+    los:{media:g('losM'),uti:g('losT'),uci:g('losU')},
+    pUCI:g('pU')/100,pUTI:g('pT')/100,
     init:g('init')/100,days:Math.round(g('days')),lwbsK:15};
-  s.pMedia=Math.max(0,1-s.pUCI-s.pUTI-s.pDom);
+  s.pMedia=Math.max(0,1-s.pUCI-s.pUTI);
+  // máximo de LWBS en saturación: salto fijo sobre la base
+  s.lwbsMax=Math.min(0.7, s.lwbsBase+0.32);
   return s;
 }
 function syncU(s){
   const t=(id,v)=>document.getElementById(id).textContent=v;
   t('v_arr',s.arrivals);t('v_hosp',Math.round(s.pHosp*100)+'%');
-  t('v_lwbs',Math.round(s.lwbsBase*100)+'%');t('v_lwbsmax',Math.round(s.lwbsMax*100)+'%');
-  t('v_bM',s.beds.media);t('v_bT',s.beds.uti);t('v_bU',s.beds.uci);t('v_bD',s.beds.dom);
-  t('v_ed',s.edCap);t('v_off',Math.round(s.offeredPct*100)+'%');
-  t('v_losM',s.los.media);t('v_losT',s.los.uti);t('v_losU',s.los.uci);t('v_losD',s.los.dom);
+  t('v_lwbs',Math.round(s.lwbsBase*100)+'%');
+  t('v_bM',s.beds.media);t('v_bT',s.beds.uti);t('v_bU',s.beds.uci);
+  t('v_ed',s.edCap);t('v_sat',s.satThresh);t('v_off',Math.round(s.offeredPct*100)+'%');t('v_pab',s.pab);
+  t('v_ugcc',s.ugcc);t('v_hdom',s.hdom);t('v_edadm',s.edAdm);t('v_edlos',s.edLOS+' d');
+  t('v_losM',s.los.media);t('v_losT',s.los.uti);t('v_losU',s.los.uci);
   t('v_pU',(s.pUCI*100).toFixed(s.pUCI*100%1?1:0)+'%');t('v_pT',Math.round(s.pUTI*100)+'%');
-  t('v_pD',Math.round(s.pDom*100)+'%');t('v_pM',Math.round(s.pMedia*100)+'%');
+  t('v_pM',Math.round(s.pMedia*100)+'%');
   t('v_init',Math.round(s.init*100)+'%');t('v_days',s.days);
 }
 
 function simulate(s){
   const phys=s.beds.media+s.beds.uti+s.beds.uci;
-  const occ={media:s.beds.media*s.init,uti:s.beds.uti*s.init,uci:s.beds.uci*s.init,dom:s.beds.dom*s.init};
-  const board={media:0,uti:0,uci:0,dom:0};
-  const o={labels:[],boarding:[],lwbs:[],divert:[],occ:{media:[],uti:[],uci:[],dom:[]}};
+  const occ={media:s.beds.media*s.init,uti:s.beds.uti*s.init,uci:s.beds.uci*s.init};
+  const board={media:0,uti:0,uci:0};
+  let edHosp=0; // pacientes hospitalizándose DENTRO de la urgencia (ocupan box varios días)
+  const o={labels:[],boarding:[],lwbs:[],divert:[],pabFlow:[],ugccFlow:[],hdomFlow:[],edHospOcc:[],edAltas:[],surge:[],occ:{media:[],uti:[],uci:[]}};
   for(let d=1;d<=s.days;d++){
-    for(const k of ['media','uti','uci','dom']) occ[k]-=occ[k]/s.los[k];
-    let B=board.media+board.uti+board.uci+board.dom;
-    const lwbs=s.lwbsBase+(s.lwbsMax-s.lwbsBase)*(B/(B+s.lwbsK));
+    for(const k of ['media','uti','uci']) occ[k]-=occ[k]/s.los[k];
+    // egresos de los hospitalizados en la propia urgencia (Ley de Little, estadía edLOS)
+    const edAltas=edHosp/s.edLOS; edHosp-=edAltas;
+    // censo total previo (espera + hospitalizados en box) determina la saturación
+    let B=board.media+board.uti+board.uci;
+    const censusPrev=B+edHosp;
+    // LWBS: curva suave + codo de saturación pasado el umbral
+    let lwbs=s.lwbsBase+(s.lwbsMax-s.lwbsBase)*(censusPrev/(censusPrev+s.lwbsK));
+    if(censusPrev>s.satThresh){
+      const over=Math.min(1,(censusPrev-s.satThresh)/(s.satThresh*0.25));
+      lwbs=lwbs+(s.lwbsMax-lwbs)*over;
+    }
     const admits=s.arrivals*(1-lwbs)*s.pHosp;
-    board.uci+=admits*s.pUCI;board.uti+=admits*s.pUTI;board.dom+=admits*s.pDom;board.media+=admits*s.pMedia;
-    const offeredSlots=s.offeredPct*phys;let moved=0;
+    board.uci+=admits*s.pUCI;board.uti+=admits*s.pUTI;board.media+=admits*s.pMedia;
+    // --- VÁLVULAS DE SALIDA DIRECTA (drenan el boarding sin ocupar cama dotación) ---
+    // a) pabellón
+    B=board.media+board.uti+board.uci;
+    const pabFlow=Math.min(s.pab,B);
+    if(B>1e-9){const f=(B-pabFlow)/B;for(const k in board)board[k]*=f;}
+    // b) UGCC / Ley de Urgencia
+    B=board.media+board.uti+board.uci;
+    const ugccFlow=Math.min(s.ugcc,B);
+    if(B>1e-9){const f=(B-ugccFlow)/B;for(const k in board)board[k]*=f;}
+    // c) rescate hospitalización domiciliaria (solo válvula, sin camas propias)
+    B=board.media+board.uti+board.uci;
+    const hdomFlow=Math.min(s.hdom,B);
+    if(B>1e-9){const f=(B-hdomFlow)/B;for(const k in board)board[k]*=f;}
+    // --- RESPUESTA A SATURACIÓN: si el censo supera el umbral, el hospital ofrece más camas ---
+    let surge=0;
+    let offeredSlots=s.offeredPct*phys;
+    let surgeBeds=0;
+    if(censusPrev>s.satThresh){
+      // se abren camas extraordinarias (catres, reconversión) + se prioriza su uso
+      surge=Math.round((censusPrev-s.satThresh)*1.2);
+      surgeBeds=surge;
+      offeredSlots+=surge;
+    }
+    // subir a cama (UCI->UTI->media), limitado por cama libre y cupo diario (+surge).
+    // las camas extraordinarias (surgeBeds) amplían transitoriamente la cama media.
+    let moved=0;
+    const capExtra={uci:s.beds.uci,uti:s.beds.uti,media:s.beds.media+surgeBeds};
     for(const k of ['uci','uti','media']){
-      const free=Math.max(0,s.beds[k]-occ[k]),room=Math.max(0,offeredSlots-moved);
+      const free=Math.max(0,capExtra[k]-occ[k]),room=Math.max(0,offeredSlots-moved);
       const m=Math.min(board[k],free,room);occ[k]+=m;board[k]-=m;moved+=m;
     }
-    {const free=Math.max(0,s.beds.dom-occ.dom);const m=Math.min(board.dom,free);occ.dom+=m;board.dom-=m;}
-    B=board.media+board.uti+board.uci+board.dom;let div=0;
-    if(B>s.edCap){div=B-s.edCap;const f=s.edCap/B;for(const k in board)board[k]*=f;B=s.edCap;}
-    o.labels.push(d);o.boarding.push(+B.toFixed(1));o.lwbs.push(+(lwbs*100).toFixed(1));o.divert.push(+div.toFixed(1));
-    for(const k of ['media','uti','uci','dom'])o.occ[k].push(s.beds[k]>0?+(100*occ[k]/s.beds[k]).toFixed(1):0);
+    // --- HOSPITALIZACIÓN EN BOX: número fijo/día (perilla), salen del boarding y ocupan box ---
+    // ingresan al box hasta s.edAdm pacientes/día (limitado por cuántos esperan),
+    // ocupan espacio durante su estadía edLOS y luego liberan (egreso = edHosp/edLOS, calculado arriba)
+    B=board.media+board.uti+board.uci;
+    const matured=Math.min(s.edAdm,B); edHosp+=matured;
+    if(B>1e-9){const f=(B-matured)/B;for(const k in board)board[k]*=f;}
+    // --- CENSO TOTAL: deja crecer libremente hasta el tope físico (100) ---
+    B=board.media+board.uti+board.uci;
+    let total=B+edHosp, div=0;
+    if(total>s.edCap){div=total-s.edCap;const f=s.edCap/total;for(const k in board)board[k]*=f;edHosp*=f;B*=f;total=s.edCap;}
+    o.labels.push(d);o.boarding.push(+total.toFixed(1));o.lwbs.push(+(lwbs*100).toFixed(1));o.divert.push(+div.toFixed(1));
+    o.pabFlow.push(+pabFlow.toFixed(1));o.ugccFlow.push(+ugccFlow.toFixed(1));o.hdomFlow.push(+hdomFlow.toFixed(1));
+    o.edHospOcc.push(+edHosp.toFixed(1));o.edAltas.push(+edAltas.toFixed(1));o.surge.push(surge);
+    for(const k of ['media','uti','uci'])o.occ[k].push(s.beds[k]>0?+(100*occ[k]/s.beds[k]).toFixed(1):0);
   }
-  o.fB=o.boarding.at(-1);o.fL=o.lwbs.at(-1);o.fD=o.divert.at(-1);
+  o.fB=o.boarding.at(-1);o.fL=o.lwbs.at(-1);o.fD=o.divert.at(-1);o.fPab=o.pabFlow.at(-1);
+  o.fUgcc=o.ugccFlow.at(-1);o.fHdom=o.hdomFlow.at(-1);o.fEdHosp=o.edHospOcc.at(-1);o.fEdAltas=o.edAltas.at(-1);
+  o.fSurge=o.surge.at(-1);
   o.fOM=o.occ.media.at(-1);
-  o.collapse=o.boarding.findIndex(b=>b>=s.edCap*0.9)+1||0;
-  o.capacity=s.beds.media/s.los.media+s.beds.uti/s.los.uti+s.beds.uci/s.los.uci+s.beds.dom/s.los.dom;
+  o.collapse=o.boarding.findIndex(b=>b>=s.satThresh)+1||0;
+  o.capacity=s.beds.media/s.los.media+s.beds.uti/s.los.uti+s.beds.uci/s.los.uci;
   o.demandBeds=s.arrivals*s.pHosp;
   o.offered=s.offeredPct*phys;
-  o.edCap=s.edCap;
+  o.pab=s.pab;o.ugcc=s.ugcc;o.hdom=s.hdom;
+  o.edCap=s.edCap;o.satThresh=s.satThresh;
   return o;
 }
 
-const PAL={media:'#5aa9e6',uti:'#f4b942',uci:'#ff5d5d',dom:'#2dd4a7'};
+const PAL={media:'#2aa9e0',uti:'#f08a1d',uci:'#d64545',dom:'#1f9d72'};
 const FM="'IBM Plex Mono', monospace";
-Chart.defaults.color='#8da0b0';Chart.defaults.font.family=FM;Chart.defaults.font.size=11;
-let chB,chO,chD,chL;
+Chart.defaults.color='#5a6b82';Chart.defaults.font.family=FM;Chart.defaults.font.size=11;
+let chB,chO,chD,chL,chP,chU,chE;
 
 function baseOpts(yMax){
-  const y={grid:{color:'rgba(36,50,64,.5)'},beginAtZero:true};
+  const y={grid:{color:'rgba(221,229,239,.9)'},beginAtZero:true};
   if(yMax){y.max=yMax;y.ticks={callback:v=>v+'%'}}
   return {responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
-    plugins:{legend:{display:false},tooltip:{backgroundColor:'#11181f',borderColor:'#243240',borderWidth:1,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#16243a',borderColor:'#16243a',borderWidth:1,
       titleFont:{family:FM},bodyFont:{family:FM},padding:10,callbacks:{title:it=>'Día '+it[0].label}}},
-    scales:{x:{grid:{color:'rgba(36,50,64,.5)'},ticks:{maxTicksLimit:12}},y}};
+    scales:{x:{grid:{color:'rgba(221,229,239,.9)'},ticks:{maxTicksLimit:12}},y}};
 }
 function ds(label,data,color,fill){return {label,data,borderColor:color,backgroundColor:fill||'transparent',
   borderWidth:2,pointRadius:0,tension:.25,fill:!!fill};}
-function grad(ctx,c){const g=ctx.createLinearGradient(0,0,0,230);g.addColorStop(0,c+'55');g.addColorStop(1,c+'00');return g;}
+function grad(ctx,c){const g=ctx.createLinearGradient(0,0,0,230);g.addColorStop(0,c+'33');g.addColorStop(1,c+'00');return g;}
 
 function kc(v,w,a){return v>=a?'var(--alarm)':v>=w?'var(--warn)':'var(--ok)'}
 
 function renderU(){
   const s=readU();syncU(s);const o=simulate(s);
-  // balance
-  const def=o.demandBeds-Math.min(o.capacity,o.offered);
+  // balance: pabellón + UGCC + rescate domiciliario drenan directo, reducen demanda neta
+  const directOut=o.pab+o.ugcc+o.hdom;
+  const demandNet=Math.max(0,o.demandBeds-directOut);
+  const def=demandNet-Math.min(o.capacity,o.offered);
   document.getElementById('balance').innerHTML=`
     <div class="bcell"><div class="lbl">Demanda de cama / día</div><div class="val">${o.demandBeds.toFixed(1)}</div><div class="sub">deben hospitalizarse</div></div>
+    <div class="bcell"><div class="lbl">Pabellón+UGCC+Domic. / día</div><div class="val">${directOut.toFixed(0)}</div><div class="sub">salen sin ocupar cama dotación</div></div>
     <div class="bcell"><div class="lbl">Capacidad de egreso / día</div><div class="val">${o.capacity.toFixed(1)}</div><div class="sub">Σ camas ÷ estadía</div></div>
     <div class="bcell"><div class="lbl">Cupo ofrecido / día</div><div class="val">${o.offered.toFixed(1)}</div><div class="sub">camas para la Urgencia</div></div>
     <div class="bcell ${def>0.5?'deficit':'ok'}"><div class="lbl">${def>0.5?'Déficit diario':'Holgura diaria'}</div><div class="val">${def>0?'+':'−'}${Math.abs(def).toFixed(1)}</div><div class="sub">${def>0.5?'la cola crece':'el sistema drena'}</div></div>`;
   // kpis
   const c1=kc(o.fB,o.edCap*0.4,o.edCap*0.85),c2=kc(o.fOM,90,99),c3=kc(o.fL,18,28),c4=kc(o.fD,0.5,3);
   document.getElementById('kpis').innerHTML=`
-    <div class="kpi"><div class="k-lbl">Boarding (24 h)</div><div class="k-val" style="color:${c1}">${Math.round(o.fB)}</div><div class="k-sub">esperan cama en Urgencia</div><div class="bar" style="width:${Math.min(100,100*o.fB/o.edCap)}%;background:${c1}"></div></div>
+    <div class="kpi"><div class="k-lbl">Censo Urgencia (24 h)</div><div class="k-val" style="color:${c1}">${Math.round(o.fB)}</div><div class="k-sub">esperando + hosp. en box</div><div class="bar" style="width:${Math.min(100,100*o.fB/o.edCap)}%;background:${c1}"></div></div>
     <div class="kpi"><div class="k-lbl">Ocupación cama media</div><div class="k-val" style="color:${c2}">${Math.round(o.fOM)}%</div><div class="k-sub">al final</div><div class="bar" style="width:${Math.min(100,o.fOM)}%;background:${c2}"></div></div>
     <div class="kpi"><div class="k-lbl">LWBS final</div><div class="k-val" style="color:${c3}">${o.fL}%</div><div class="k-sub">se van sin atención</div><div class="bar" style="width:${Math.min(100,o.fL*2)}%;background:${c3}"></div></div>
     <div class="kpi"><div class="k-lbl">Derivación / día</div><div class="k-val" style="color:${c4}">${o.fD.toFixed(1)}</div><div class="k-sub">${o.fD>0.5?'urgencia desborda':'sin desborde'}</div><div class="bar" style="width:${Math.min(100,o.fD*10)}%;background:${c4}"></div></div>`;
@@ -494,19 +681,27 @@ function renderU(){
   // recommendations
   renderReco(o);
   // charts
-  if(!chB){chB=new Chart(document.getElementById('chB'),{type:'line',data:{labels:o.labels,datasets:[ds('Boarding',o.boarding,'#ff5d5d')]},options:baseOpts()});
-    const c=chB.canvas.getContext('2d');chB.data.datasets[0].backgroundColor=grad(c,'#ff5d5d');chB.data.datasets[0].fill=true;chB.update();}
+  if(!chB){chB=new Chart(document.getElementById('chB'),{type:'line',data:{labels:o.labels,datasets:[ds('Boarding',o.boarding,'#d64545')]},options:baseOpts()});
+    const c=chB.canvas.getContext('2d');chB.data.datasets[0].backgroundColor=grad(c,'#d64545');chB.data.datasets[0].fill=true;chB.update();}
   else{chB.data.labels=o.labels;chB.data.datasets[0].data=o.boarding;chB.update();}
-  const occDs=[ds('Media',o.occ.media,PAL.media),ds('UTI',o.occ.uti,PAL.uti),ds('UCI',o.occ.uci,PAL.uci),ds('Domic.',o.occ.dom,PAL.dom)];
+  const occDs=[ds('Media',o.occ.media,PAL.media),ds('UTI',o.occ.uti,PAL.uti),ds('UCI',o.occ.uci,PAL.uci)];
   if(!chO){chO=new Chart(document.getElementById('chO'),{type:'line',data:{labels:o.labels,datasets:occDs},options:baseOpts(108)});}
   else{chO.data.labels=o.labels;occDs.forEach((d,i)=>chO.data.datasets[i].data=d.data);chO.update();}
-  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Derivación',o.divert,'#9d7bff')]},options:baseOpts()});
-    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#9d7bff');chD.data.datasets[0].fill=true;chD.update();}
+  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Derivación',o.divert,'#1f3a93')]},options:baseOpts()});
+    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#1f3a93');chD.data.datasets[0].fill=true;chD.update();}
   else{chD.data.labels=o.labels;chD.data.datasets[0].data=o.divert;chD.update();}
-  if(!chL){chL=new Chart(document.getElementById('chL'),{type:'line',data:{labels:o.labels,datasets:[ds('LWBS',o.lwbs,'#f4b942')]},options:baseOpts()});
+  if(!chL){chL=new Chart(document.getElementById('chL'),{type:'line',data:{labels:o.labels,datasets:[ds('LWBS',o.lwbs,'#f08a1d')]},options:baseOpts()});
     chL.options.scales.y.ticks={callback:v=>v+'%'};
-    const c=chL.canvas.getContext('2d');chL.data.datasets[0].backgroundColor=grad(c,'#f4b942');chL.data.datasets[0].fill=true;chL.update();}
+    const c=chL.canvas.getContext('2d');chL.data.datasets[0].backgroundColor=grad(c,'#f08a1d');chL.data.datasets[0].fill=true;chL.update();}
   else{chL.data.labels=o.labels;chL.data.datasets[0].data=o.lwbs;chL.update();}
+  if(!chP){chP=new Chart(document.getElementById('chP'),{type:'line',data:{labels:o.labels,datasets:[ds('Pabellón',o.pabFlow,'#1f9d72')]},options:baseOpts()});
+    const c=chP.canvas.getContext('2d');chP.data.datasets[0].backgroundColor=grad(c,'#1f9d72');chP.data.datasets[0].fill=true;chP.update();}
+  else{chP.data.labels=o.labels;chP.data.datasets[0].data=o.pabFlow;chP.update();}
+  if(!chU){chU=new Chart(document.getElementById('chU'),{type:'line',data:{labels:o.labels,datasets:[ds('UGCC',o.ugccFlow,'#1f3a93'),ds('Domiciliaria',o.hdomFlow,'#1f9d72')]},options:baseOpts()});chU.update();}
+  else{chU.data.labels=o.labels;chU.data.datasets[0].data=o.ugccFlow;chU.data.datasets[1].data=o.hdomFlow;chU.update();}
+  if(!chE){chE=new Chart(document.getElementById('chE'),{type:'line',data:{labels:o.labels,datasets:[ds('Altas en Urgencia',o.edAltas,'#d64545')]},options:baseOpts()});
+    const c=chE.canvas.getContext('2d');chE.data.datasets[0].backgroundColor=grad(c,'#d64545');chE.data.datasets[0].fill=true;chE.update();}
+  else{chE.data.labels=o.labels;chE.data.datasets[0].data=o.edAltas;chE.update();}
 }
 
 function renderReco(o){
@@ -530,108 +725,212 @@ function renderReco(o){
     `<div class="reco-item"><div class="rh">${i[0]} <span class="ic">${i[1]}</span></div><p>${i[2]}</p></div>`).join('');
 }
 
-/* presets */
-const setV=v=>{for(const k in v)document.getElementById(k).value=v[k];};
-const PRESETS={
-  A:{arr:150,hosp:20,lwbs:10,lwbsmax:40,bM:120,bT:28,bU:10,bD:60,ed:35,off:18,losM:7,losT:10,losU:14,losD:12,pU:1,pT:10,pD:20,init:80,days:120},
-  B:{arr:150,hosp:20,lwbs:8,lwbsmax:35,bM:150,bT:35,bU:12,bD:90,ed:35,off:30,losM:5,losT:8,losU:10,losD:8,pU:1,pT:10,pD:20,init:80,days:120},
-  C:{arr:150,hosp:20,lwbs:10,lwbsmax:55,bM:60,bT:30,bU:10,bD:50,ed:35,off:9,losM:9,losT:12,losU:16,losD:16,pU:1,pT:10,pD:20,init:80,days:120}
-};
-function activate(w){['A','B','C'].forEach(k=>document.getElementById('p'+k).classList.toggle('active',k===w));}
-document.getElementById('pA').onclick=()=>{setV(PRESETS.A);activate('A');renderU();};
-document.getElementById('pB').onclick=()=>{setV(PRESETS.B);activate('B');renderU();};
-document.getElementById('pC').onclick=()=>{setV(PRESETS.C);activate('C');renderU();};
-uIds.forEach(id=>document.getElementById(id).addEventListener('input',()=>{activate(null);renderU();}));
+/* perillas en vivo: cada cambio recalcula todo (incluido mientras se arrastra) */
+uIds.forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('input',renderU);
+  el.addEventListener('change',renderU);
+});
 renderU();
 
 /* ===================== MEDICINA INTERNA ===================== */
-const MED=[
-  {y:2020,eg:11125,pm:1.25,uph:13906,em:10.1,iema:1.06,out:7.5,exc:9200,dc:112363,fal:6.3,re:1.4},
-  {y:2021,eg:11810,pm:1.27,uph:14969,em:10.3,iema:1.08,out:8.2,exc:10045,dc:121643,fal:6.5,re:1.6},
-  {y:2022,eg:12430,pm:1.30,uph:16159,em:10.8,iema:1.10,out:8.9,exc:10972,dc:134244,fal:6.7,re:1.7},
-  {y:2023,eg:12920,pm:1.31,uph:16925,em:11.2,iema:1.11,out:9.1,exc:11330,dc:144704,fal:6.9,re:1.8},
-  {y:2024,eg:13370,pm:1.33,uph:17792,em:11.4,iema:1.12,out:9.3,exc:11805,dc:152418,fal:7.0,re:1.9},
-];
-let medInit=false,mEM,mUPH,mOut,mMort;
-function initMed(){
-  if(medInit){return;} medInit=true;
-  const L=MED.map(r=>r.y), last=MED.at(-1), first=MED[0];
-  // indicator cards
+let medInit=false,mEM,mDC,mOut,mUPH;
+const mIds=['meg','mpm','mem','mexp','mout','mfal','mre'];
+function readMed(){
+  const g=id=>parseFloat(document.getElementById(id).value);
+  return {eg:g('meg'),pm:g('mpm'),em:g('mem'),exp:g('mexp'),out:g('mout'),fal:g('mfal'),re:g('mre')};
+}
+function computeMed(m){
+  const iema=m.em/m.exp;
+  const uph=m.eg*m.pm;
+  const dcTotal=m.eg*m.em;          // días-cama totales
+  const dcExp=m.eg*m.exp;           // días-cama esperados
+  const exceso=Math.max(0,dcTotal-dcExp); // exceso por ineficiencia
+  return {iema,uph,dcTotal,dcExp,exceso};
+}
+function renderMed(){
+  const m=readMed(); const c=computeMed(m);
+  // etiquetas
+  const t=(id,v)=>document.getElementById(id).textContent=v;
+  t('v_meg',m.eg.toLocaleString('es'));t('v_mpm',m.pm.toFixed(2).replace('.',','));
+  t('v_mem',m.em.toFixed(1).replace('.',','));t('v_mexp',m.exp.toFixed(1).replace('.',','));
+  t('v_mout',m.out.toFixed(1).replace('.',',')+'%');t('v_mfal',m.fal.toFixed(1).replace('.',',')+'%');
+  t('v_mre',m.re.toFixed(1).replace('.',',')+'%');
+  // tarjetas de indicadores (se evalúan contra umbrales del taller)
+  const flag=(v,warn,alarm)=>v>=alarm?'var(--alarm)':v>=warn?'var(--warn)':'var(--ok)';
   const cards=[
-    ['Egresos',last.eg.toLocaleString('es'),last.eg-first.eg,'volumen','Actividad creciente; consistente con un servicio de alta demanda.'],
-    ['PM GRD',last.pm.toFixed(2),(last.pm-first.pm).toFixed(2),'1,2–1,6 alta compl.','Dentro de rango de alta complejidad; casuística algo más pesada.'],
-    ['EM Bruta',last.em+' d',(last.em-first.em).toFixed(1)+' d','norma ≈ 8 d','Sobre la norma y subiendo: principal alerta de eficiencia.'],
-    ['IEMA',last.iema.toFixed(2),(last.iema-first.iema).toFixed(2),'1,00 esperado','>1 = estancias más largas de lo esperado para el GRD.'],
-    ['Outliers sup.',last.out+'%',(last.out-first.out).toFixed(1)+' pp','&lt; 5%','Casi el doble del umbral: pacientes varados.'],
-    ['Fallecidos',last.fal+'%',(last.fal-first.fal).toFixed(1)+' pp','1–5% alta compl.','En el borde alto; vigilar junto a complejidad.'],
-    ['Reingresos &lt;7d',last.re+'%',(last.re-first.re).toFixed(1)+' pp','&lt; 5–10%','Bajo: la continuidad post-alta hoy no es el problema.'],
-    ['Exceso días-cama',last.exc.toLocaleString('es'),last.exc-first.exc,(((last.exc/last.dc)*100).toFixed(1))+'% del total','Ideal &lt;5% del total; hoy lo supera.'],
+    ['EM Bruta',m.em.toFixed(1).replace('.',',')+' d','norma ≈ 8 d',flag(m.em,9,11)],
+    ['IEMA',c.iema.toFixed(2).replace('.',','),'1,00 esperado',flag(c.iema,1.05,1.15)],
+    ['Outliers sup.',m.out.toFixed(1).replace('.',',')+'%','&lt; 5%',flag(m.out,5,8)],
+    ['Exceso días-cama',Math.round(c.exceso).toLocaleString('es'),((c.exceso/c.dcTotal*100)||0).toFixed(1).replace('.',',')+'% del total',flag(c.exceso/c.dcTotal*100,5,10)],
+    ['PM GRD',m.pm.toFixed(2).replace('.',','),'1,2–1,6 alta compl.','var(--ok)'],
+    ['UPH',Math.round(c.uph).toLocaleString('es'),'producción ajustada','var(--sky)'],
+    ['Fallecidos',m.fal.toFixed(1).replace('.',',')+'%','1–5% alta compl.',flag(m.fal,5,8)],
+    ['Reingresos &lt;7d',m.re.toFixed(1).replace('.',',')+'%','&lt; 5–10%',flag(m.re,5,10)],
   ];
-  document.getElementById('ind-grid').innerHTML=cards.map(c=>{
-    const dn=typeof c[2]==='number'?c[2]:parseFloat(c[2]);
-    const bad=['EM Bruta','IEMA','Outliers sup.','Fallecidos','Exceso días-cama','Reingresos &lt;7d'].includes(c[0]);
-    const cls=dn>0?(bad?'up':'down'):(dn<0?(bad?'down':'up'):'neutral');
-    const flag=c[0]==='EM Bruta'||c[0]==='IEMA'||c[0]==='Outliers sup.'?'var(--alarm)':c[0]==='Fallecidos'?'var(--warn)':'var(--ok)';
-    const arrow=dn>0?'▲':dn<0?'▼':'—';
-    const dval=typeof c[2]==='number'?(dn>0?'+':'')+c[2].toLocaleString('es'):c[2];
-    return `<div class="ind"><span class="flag" style="background:${flag}"></span>
-      <div class="iname">${c[0]}</div><div class="ival">${c[1]}</div>
-      <div class="idelta ${cls}">${arrow} ${dval} <span style="color:var(--ink-faint)">vs 2020</span></div>
-      <div class="iref">Ref: ${c[3]}</div></div>`;
+  document.getElementById('ind-grid').innerHTML=cards.map(cc=>
+    `<div class="ind"><span class="flag" style="background:${cc[3]}"></span>
+      <div class="iname">${cc[0]}</div><div class="ival">${cc[1]}</div>
+      <div class="iref">Ref: ${cc[2]}</div></div>`).join('');
+  // gráficos (barras comparativas, recalculados en vivo)
+  const mopt=(yl)=>({responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#16243a',borderColor:'#16243a',borderWidth:1,titleFont:{family:FM},bodyFont:{family:FM},padding:10}},
+    scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(221,229,239,.9)'},beginAtZero:true,title:{display:true,text:yl,color:'#90a0b5',font:{size:10}}}}});
+  const dash=(label,val,color)=>({type:'line',label,data:['',''].map(()=>val),borderColor:color,borderWidth:1.5,borderDash:[5,4],pointRadius:0});
+
+  if(!mEM){
+    mEM=new Chart(document.getElementById('mEM'),{type:'bar',data:{labels:['EM Bruta','EM Esperada'],datasets:[
+      {label:'días',data:[m.em,m.exp],backgroundColor:['#2aa9e0cc','#f08a1dcc'],borderRadius:6},
+      {type:'line',label:'Norma 8 d',data:[8,8],borderColor:'#90a0b5',borderWidth:1.5,borderDash:[5,4],pointRadius:0}
+    ]},options:mopt('días')});
+  }else{mEM.data.datasets[0].data=[m.em,m.exp];mEM.update();}
+
+  if(!mDC){
+    mDC=new Chart(document.getElementById('mDC'),{type:'bar',data:{labels:['Esperados','Exceso'],datasets:[
+      {label:'días-cama',data:[c.dcExp,c.exceso],backgroundColor:['#2aa9e0cc','#d64545cc'],borderRadius:6}
+    ]},options:mopt('días-cama / año')});
+  }else{mDC.data.datasets[0].data=[c.dcExp,c.exceso];mDC.update();}
+
+  if(!mOut){
+    mOut=new Chart(document.getElementById('mOut'),{type:'bar',data:{labels:['Outliers sup.'],datasets:[
+      {label:'%',data:[m.out],backgroundColor:[m.out>=8?'#d64545cc':m.out>=5?'#e8920ccc':'#1f9d72cc'],borderRadius:6,barThickness:80},
+      {type:'line',label:'Umbral 5%',data:[5],borderColor:'#90a0b5',borderWidth:1.5,borderDash:[5,4],pointRadius:0}
+    ]},options:mopt('%')});
+  }else{mOut.data.datasets[0].data=[m.out];mOut.data.datasets[0].backgroundColor=[m.out>=8?'#d64545cc':m.out>=5?'#e8920ccc':'#1f9d72cc'];mOut.update();}
+
+  if(!mUPH){
+    mUPH=new Chart(document.getElementById('mUPH'),{type:'bar',data:{labels:['Egresos','UPH'],datasets:[
+      {label:'',data:[m.eg,c.uph],backgroundColor:['#1f9d72cc','#f08a1dcc'],borderRadius:6}
+    ]},options:mopt('volumen / año')});
+  }else{mUPH.data.datasets[0].data=[m.eg,c.uph];mUPH.update();}
+
+  // what-if (usa IEMA actual calculado)
+  const obj=parseFloat(document.getElementById('iema').value);
+  const objShown=Math.min(obj,c.iema);
+  document.getElementById('v_iema').textContent=obj.toFixed(2);
+  const emObjBruta=m.em*(objShown/c.iema);
+  const freed=Math.max(0,c.dcTotal*(1-objShown/c.iema));
+  const extraEg=emObjBruta>0?freed/emObjBruta:0;
+  const bedsEq=freed/365;
+  document.getElementById('wi-out').innerHTML=`
+    <div class="b"><div class="l">Días-cama liberados / año</div><div class="v">${Math.round(freed).toLocaleString('es')}</div><div class="s">desde IEMA ${c.iema.toFixed(2)} → ${objShown.toFixed(2)}</div></div>
+    <div class="b"><div class="l">Equivale a camas</div><div class="v">${bedsEq.toFixed(1)}</div><div class="s">camas funcionando todo el año</div></div>
+    <div class="b"><div class="l">Egresos adicionales / año</div><div class="v">${Math.round(extraEg).toLocaleString('es')}</div><div class="s">más altas con la misma planta</div></div>
+    <div class="b"><div class="l">EM bruta resultante</div><div class="v">${emObjBruta.toFixed(1)}</div><div class="s">días (norma ≈ 8)</div></div>`;
+}
+function initMed(){
+  if(!medInit){medInit=true;
+    mIds.forEach(id=>document.getElementById(id).addEventListener('input',renderMed));
+    document.getElementById('iema').addEventListener('input',renderMed);
+  }
+  renderMed();
+}
+
+/* ===================== CASOS DE ESTUDIO ===================== */
+const CASOS=[
+  {
+    svc:'Medicina Interna · Hospital Alicia Rodríguez · Santiago',
+    title:'El servicio que no logra dar de alta',
+    desc:'Hospital de alta complejidad, 250 camas de complejidad media, población regional vulnerable. La norma ministerial fija estadía media bruta cercana a 8 días. En 5 años la actividad creció, pero la eficiencia interna se deterioró.',
+    mini:[['EM Bruta','11,4 d',true],['IEMA','1,12',true],['Outliers sup.','9,3%',true],['PM GRD','1,33',false],['Reingr. <7d','1,9%',false]],
+    qs:[
+      {q:'¿Cuál es el problema central de este servicio?',
+       a:`El problema no es de volumen ni de complejidad — los egresos crecen y el PM GRD (1,33) es normal para alta complejidad. El problema es de <b>eficiencia interna del flujo</b>: la estadía media bruta (11,4 d) está muy por sobre la norma de 8 d, y el IEMA de 1,12 confirma que las hospitalizaciones duran más de lo esperado para su GRD.
+       <div class="keypt">Las causas típicas son organizacionales, no clínicas: gestión de camas, altas tardías (sobre todo fines de semana), dependencia de interconsultas por falta de especialistas y equipamiento diagnóstico intermitente.</div>`},
+      {q:'¿Qué tres indicadores fundamentarían una propuesta?',
+       a:`<span class="pill">IEMA + EM Bruta</span><span class="pill">Outliers superiores</span><span class="pill">Exceso de días-cama</span>
+       <br><b>IEMA y EM bruta</b> miden la brecha de eficiencia. <b>Outliers superiores</b> (9,3%, casi el doble del umbral de 5%) identifican los pacientes "varados". El <b>exceso de días-cama</b> (~11.800) cuantifica el impacto real sobre la ocupación.
+       <div class="keypt">Una propuesta concreta: unidad de gestión de altas con criterios de egreso explícitos, planificación del alta desde el ingreso, y altas en fin de semana. Reducir el exceso libera camas para la red y la Urgencia.</div>`},
+      {q:'¿Qué riesgo hay que vigilar al acelerar las altas?',
+       a:`Los <b>reingresos urgentes &lt;7 días</b>, hoy bajos (1,9%). Si se acelera el alta sin asegurar continuidad del cuidado, una alta prematura devuelve al paciente por Urgencia — empeorando el flujo global y la seguridad.
+       <div class="keypt">La eficiencia y la seguridad deben moverse juntas: acortar estadía sí, pero con seguimiento ambulatorio y coordinación con atención primaria.</div>`}
+    ]
+  },
+  {
+    svc:'Indiferenciado Médico-Quirúrgico · Hospital Corina Rojas · Valparaíso',
+    title:'Más cirugías, pacientes más graves, más muertes',
+    desc:'Centro regional de referencia, 250 camas. Asumió cirugías mayores por falla de pabellones en su centro de derivación, con mayor uso de UCI y personal poco habituado a pacientes críticos. Ambiente laboral tenso.',
+    mini:[['Fallecidos','13,7%',true],['PM GRD','2,25',true],['IEMA','1,07',false],['Outliers sup.','7,1%',true],['EM Bruta','10,7 d',false]],
+    qs:[
+      {q:'¿La mortalidad alta refleja mala calidad o mayor complejidad?',
+       a:`Hay que leerla <b>junto al PM GRD</b>. El peso medio subió fuerte (de 1,80 a 2,25): el servicio atiende casos mucho más complejos que antes, lo que explica parte del alza de mortalidad (de 11,8% a 13,7%).
+       <div class="keypt">Pero el contexto agrega un riesgo evitable: personal capacitado "rápido" para pacientes críticos a los que no está habituado, y brechas de enfermería intensiva y kinesiología respiratoria en turnos nocturnos. Parte de la mortalidad podría ser prevenible.</div>`},
+      {q:'¿Cómo distinguir mortalidad esperable de prevenible?',
+       a:`Conviene mirar <b>mortalidad ajustada por complejidad</b> (no la bruta), comparar con estándares por GRD, y analizar mortalidad por franja horaria y día de la semana — si se concentra en noches y fines de semana, apunta a dotación, no a gravedad.
+       <span class="pill">Fallecidos %</span><span class="pill">PM GRD</span><span class="pill">dotación de enfermería crítica</span>
+       <div class="keypt">Propuesta: cerrar brechas de enfermería UCI y kinesiología respiratoria en turnos críticos, protocolos de manejo de paciente crítico, y monitoreo de mortalidad ajustada.</div>`},
+      {q:'¿Qué dice que la transición fue brusca y no planificada?',
+       a:`El cambio nació de un problema externo (pabellones malos del centro de derivación por la licitación de aire acondicionado), no de una planificación. El alza sostenida de PM GRD, mortalidad y outliers, sumada al mal clima laboral, sugiere un servicio <b>sobrepasado por una demanda que no eligió</b>.
+       <div class="keypt">Aquí la palanca de gestión es de red: redistribuir la carga quirúrgica compleja y dotar adecuadamente antes de asumir casuística crítica.</div>`}
+    ]
+  },
+  {
+    svc:'Traumatología · Hospital Santa Javiera Flores · Concepción',
+    title:'Buen flujo, baja complejidad… y muertes que no calzan',
+    desc:'Servicio con harta cirugía ambulatoria, pacientes entran y salen rápido. Buen flujo general, equipo pequeño y afiatado. Pero la mortalidad subió de forma llamativa para el tipo de servicio, con reclamos de usuarios.',
+    mini:[['PM GRD','0,81',true],['EM Bruta','5,7 d',false],['IEMA','0,87',false],['Fallecidos','6,7%',true],['Outliers sup.','2,9%',false]],
+    qs:[
+      {q:'¿Qué implica un PM GRD < 1 persistente y a la baja?',
+       a:`Indica una <b>casuística de baja complejidad</b>: el servicio resuelve casos livianos (fracturas, esguinces, cirugía ambulatoria). El IEMA de 0,87 y la EM bruta de 5,7 d confirman buena eficiencia y flujo rápido — eso es positivo.
+       <div class="keypt">Pero un PM GRD bajo y cayendo también puede señalar que el servicio retiene casos simples y deriva los complejos, o que está subutilizando capacidad instalada.</div>`},
+      {q:'¿Por qué la mortalidad de 6,7% es la gran alarma?',
+       a:`Porque <b>no calza con la baja complejidad</b>. En un servicio de traumatología con PM GRD 0,81 e IEMA 0,87, una mortalidad que saltó de 1,8% a 6,7% en cinco años es anómala — los pacientes "no deberían" morir a esa tasa.
+       <span class="pill">Fallecidos %</span><span class="pill">PM GRD</span><span class="pill">IEMA</span>
+       <div class="keypt">Esto apunta a un problema de <b>calidad o seguridad clínica</b>, no de gravedad: posibles complicaciones evitables, fallas de pesquisa, déficit de personal de pabellón. La enfermera intuye que "no es pega nuestra", pero los datos obligan a investigar.</div>`},
+      {q:'¿Cómo usar bien el pabellón y las camas con baja casuística?',
+       a:`Con casuística liviana, el foco es <b>productividad y rotación</b>: maximizar cirugía ambulatoria y mayor resolución, evitar suspensiones por falta de insumos/personal, y agilizar altas de pacientes mayores sin red de apoyo (donde se demora el egreso).
+       <div class="keypt">Pero todo eso es secundario frente a la mortalidad anómala: la propuesta debe priorizar una auditoría de eventos adversos y mortalidad antes que la eficiencia.</div>`}
+    ]
+  },
+  {
+    svc:'Geriatría · Hospital Chungungo Martínez · Iquique',
+    title:'Pacientes que ya no necesitan hospital pero no tienen a dónde ir',
+    desc:'Hospital de más de 60 años, infraestructura antigua. 120 camas, recibe casi todos los adultos mayores de la región: multimorbilidad, dependencia, demencia, sin redes. Atención primaria que no controla, red sociosanitaria mínima, cargos médicos vacantes.',
+    mini:[['Reingr. <7d','3,3%',true],['Fallecidos','10,5%',true],['EM Bruta','9,7 d',true],['IEMA','1,03',false],['PM GRD','1,22',false]],
+    qs:[
+      {q:'¿Por qué la estadía y los reingresos son el síntoma clave?',
+       a:`Porque reflejan un problema que <b>está fuera del hospital</b>. La EM bruta sube sostenidamente y los reingresos crecen (de 2,8% a 3,3%) porque la atención primaria no hace seguimiento y no hay red sociosanitaria que reciba a los pacientes.
+       <div class="keypt">El propio relato lo dice: pacientes que ya no requieren atención médica siguen hospitalizados por semanas "porque no tienen a dónde ir". Son días-cama consumidos por una falla de la red, no del servicio.</div>`},
+      {q:'¿Qué estrategias mejorarían la continuidad del cuidado tras el alta?',
+       a:`<span class="pill">Reingresos <7d</span><span class="pill">EM Bruta / días-cama</span><span class="pill">IEMA</span>
+       Fortalecer el vínculo con atención primaria (seguimiento activo del adulto mayor), crear cupos en residencias sanitarias y hogares de larga estadía, telemedicina geriátrica, y coordinación sociosanitaria con el municipio.
+       <div class="keypt">Son intervenciones de <b>red y de política pública</b>, no clínicas internas. Aquí el FODA del taller es muy útil: la debilidad está dentro, pero las oportunidades y amenazas están afuera (envejecimiento, falta de red, hospital de Alto Hospicio que no descongestiona).</div>`},
+      {q:'¿Cómo medir el impacto de mejorar la red?',
+       a:`Con los mismos indicadores GRD, observando su tendencia tras la intervención: caída de la <b>EM bruta</b> y del <b>exceso de días-cama</b> (al egresar oportunamente a quienes ya no requieren hospital), y de los <b>reingresos &lt;7d</b> (si el seguimiento ambulatorio funciona).
+       <div class="keypt">El indicador de éxito no es clínico sino de flujo: camas-día liberadas que vuelven a estar disponibles para pacientes que sí requieren hospitalización aguda.</div>`}
+    ]
+  }
+];
+
+let casosInit=false;
+function initCasos(){
+  if(casosInit){return;} casosInit=true;
+  const cont=document.getElementById('cases-container');
+  cont.innerHTML=CASOS.map((c,ci)=>{
+    const mini=c.mini.map(m=>`<span class="m ${m[2]?'bad':''}">${m[0]} <b>${m[1]}</b></span>`).join('');
+    const qs=c.qs.map((qa,qi)=>`
+      <div class="q" id="q-${ci}-${qi}">
+        <button class="q-btn" onclick="toggleQ(${ci},${qi})">
+          <span class="qi">P${qi+1}</span>${qa.q}<span class="chev">▶</span>
+        </button>
+        <div class="q-ans"><div class="q-ans-inner">${qa.a}</div></div>
+      </div>`).join('');
+    return `<div class="case">
+      <div class="case-head">
+        <div class="nseq">${ci+1}</div>
+        <div class="ch-body">
+          <div class="ch-svc">${c.svc}</div>
+          <h4>${c.title}</h4>
+          <div class="ch-desc">${c.desc}</div>
+          <div class="case-mini">${mini}<span class="m" style="color:var(--ink-faint)">datos 2024</span></div>
+        </div>
+      </div>
+      <div class="case-body">${qs}</div>
+    </div>`;
   }).join('');
-  // table
-  const heads=['Año','Egresos','PM GRD','UPH','EM Bruta','IEMA','Outliers %','Exceso d-cama','Días-cama','Fallec. %','Reingr. %'];
-  let html='<thead><tr>'+heads.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
-  MED.forEach(r=>{html+=`<tr><td>${r.y}</td><td>${r.eg.toLocaleString('es')}</td><td>${r.pm.toFixed(2)}</td><td>${r.uph.toLocaleString('es')}</td><td>${r.em}</td><td>${r.iema.toFixed(2)}</td><td>${r.out}%</td><td>${r.exc.toLocaleString('es')}</td><td>${r.dc.toLocaleString('es')}</td><td>${r.fal}%</td><td>${r.re}%</td></tr>`;});
-  html+='</tbody>';document.getElementById('gtable').innerHTML=html;
-  // charts
-  const mopt=(y1l,y2l)=>({responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
-    plugins:{legend:{display:false},tooltip:{backgroundColor:'#11181f',borderColor:'#243240',borderWidth:1,titleFont:{family:FM},bodyFont:{family:FM},padding:10}},
-    scales:{x:{grid:{color:'rgba(36,50,64,.5)'}},
-      y:{position:'left',grid:{color:'rgba(36,50,64,.5)'},title:{display:true,text:y1l,color:'#5e7385',font:{size:10}}},
-      y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:y2l,color:'#5e7385',font:{size:10}}}}});
-  const bar=(label,data,color,yID)=>({type:'bar',label,data,backgroundColor:color+'cc',borderRadius:4,yAxisID:yID||'y'});
-  const line=(label,data,color,yID)=>({type:'line',label,data,borderColor:color,borderWidth:2.5,pointRadius:3,pointBackgroundColor:color,tension:.25,yAxisID:yID||'y'});
-  const dash=(label,val,color,yID)=>({type:'line',label,data:MED.map(()=>val),borderColor:color,borderWidth:1.5,borderDash:[5,4],pointRadius:0,yAxisID:yID||'y'});
-
-  mEM=new Chart(document.getElementById('mEM'),{data:{labels:L,datasets:[
-    line('EM Bruta (días)',MED.map(r=>r.em),PAL.media,'y'),
-    line('IEMA',MED.map(r=>r.iema),'#ff5d5d','y1'),
-    dash('Norma 8 d',8,'#5e7385','y'),
-    dash('IEMA 1,0',1.0,'#5e7385','y1'),
-  ]},options:mopt('días','IEMA')});
-
-  mUPH=new Chart(document.getElementById('mUPH'),{data:{labels:L,datasets:[
-    bar('Egresos',MED.map(r=>r.eg),'#2dd4a7','y'),
-    line('UPH',MED.map(r=>r.uph),'#f4b942','y1'),
-  ]},options:mopt('egresos','UPH')});
-
-  mOut=new Chart(document.getElementById('mOut'),{data:{labels:L,datasets:[
-    line('Outliers sup. (%)',MED.map(r=>r.out),'#ff5d5d','y'),
-    bar('Exceso días-cama',MED.map(r=>r.exc),'#f4b942','y1'),
-    dash('Umbral 5%',5,'#5e7385','y'),
-  ]},options:mopt('outliers %','días-cama')});
-
-  mMort=new Chart(document.getElementById('mMort'),{data:{labels:L,datasets:[
-    line('Fallecidos (%)',MED.map(r=>r.fal),'#ff5d5d','y'),
-    line('Reingresos <7d (%)',MED.map(r=>r.re),PAL.media,'y'),
-  ]},options:mopt('%','% ')});
-
-  // what-if
-  const wi=()=>{
-    const obj=parseFloat(document.getElementById('iema').value);
-    document.getElementById('v_iema').textContent=obj.toFixed(2);
-    const cur=last.iema, dc=last.dc, emObjBruta=last.em*(obj/cur);
-    const freed=Math.max(0,dc*(1-obj/cur));
-    const extraEg=freed/emObjBruta;
-    const bedsEq=freed/365;
-    document.getElementById('wi-out').innerHTML=`
-      <div class="b"><div class="l">Días-cama liberados / año</div><div class="v">${Math.round(freed).toLocaleString('es')}</div><div class="s">desde IEMA ${cur.toFixed(2)} → ${obj.toFixed(2)}</div></div>
-      <div class="b"><div class="l">Equivale a camas</div><div class="v">${bedsEq.toFixed(1)}</div><div class="s">camas funcionando todo el año</div></div>
-      <div class="b"><div class="l">Egresos adicionales / año</div><div class="v">${Math.round(extraEg).toLocaleString('es')}</div><div class="s">más altas con la misma planta</div></div>
-      <div class="b"><div class="l">EM bruta resultante</div><div class="v">${emObjBruta.toFixed(1)}</div><div class="s">días (norma ≈ 8)</div></div>`;
-  };
-  document.getElementById('iema').addEventListener('input',wi);wi();
+}
+function toggleQ(ci,qi){
+  document.getElementById('q-'+ci+'-'+qi).classList.toggle('open');
 }
 </script>
 </body>
