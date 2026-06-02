@@ -250,6 +250,23 @@
   .map-rel .rel .txt{font-size:13px;color:var(--ink-dim);line-height:1.55}
   .map-rel .rel .txt b{color:var(--navy)}
   .map-rel .rel .txt .tag{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:1px 7px;border-radius:5px;margin-left:6px}
+  /* relacion con grafico al lado */
+  .relx{display:grid;grid-template-columns:minmax(260px,1fr) minmax(280px,1.1fr);gap:22px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center}
+  .relx:last-child{border-bottom:none}
+  @media(max-width:760px){.relx{grid-template-columns:1fr}}
+  .relx .txt{font-size:13px;color:var(--ink-dim);line-height:1.55}
+  .relx .txt b{color:var(--navy)}
+  .relx .txt .rh{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+  .relx .txt .rh .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;color:#fff;font-weight:700;flex-shrink:0}
+  .relx .txt .rh b{font-size:14px}
+  .sens-grid{display:grid;gap:10px}
+  .sens-grid.g1{grid-template-columns:1fr}
+  .sens-grid.g2{grid-template-columns:1fr 1fr}
+  .sens-grid.g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:560px){.sens-grid.g2,.sens-grid.g3{grid-template-columns:1fr 1fr}}
+  .sens{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 8px 4px}
+  .sens .st{font-family:var(--mono);font-size:9.5px;color:var(--ink-dim);text-align:center;margin-bottom:2px;line-height:1.2}
+  .sens canvas{width:100%!important;height:88px!important}
 
   /* ---------- La matemática (tab 4) ---------- */
   .math-sec{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(22,36,58,.05)}
@@ -301,7 +318,7 @@
 
   <!-- ============================== VIEW 1: URGENCIA ============================== -->
   <section class="view active" id="view-urg">
-    <p class="lede">La Urgencia funciona como un <b>estanque</b>: entra un caudal de pacientes y debe drenar por varias válvulas. Quienes necesitan cama solo salen si hay cama libre <b>río abajo</b>; si no la hay, hacen <b>boarding</b> (esperan en la Urgencia). Cuando las válvulas que sacan pacientes se cierran, la Urgencia se satura aunque la entrada nunca cambie. Mueve las perillas y observa los indicadores en vivo.</p>
+    <p class="lede">La Unidad de Urgencia puede entenderse como un <b>sistema de flujo de pacientes</b>. La demanda ingresa de forma continua y su capacidad de respuesta depende de los <b>mecanismos de egreso</b> disponibles. Los pacientes con indicación de hospitalización solo pueden abandonar la Urgencia cuando existe capacidad disponible en la unidad de destino. Cuando la capacidad de egreso es insuficiente para absorber la demanda, se genera <b>boarding</b> y la congestión se acumula progresivamente. Este simulador permite explorar cómo cambios en la demanda, la disponibilidad de camas, la estadía promedio y las estrategias de gestión modifican el desempeño global del sistema.</p>
 
     <div class="balance" id="balance"></div>
     <p style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin:8px 0 0">
@@ -310,7 +327,7 @@
     <div class="grid">
       <div class="controls">
         <div class="panel">
-          <h2><span class="dot"></span>Perillas de la Urgencia</h2>
+          <h2><span class="dot"></span>Factores de flujo de la Urgencia</h2>
 
           <div class="sect-divider"><i style="background:var(--ok)"></i>Entrada a la Urgencia</div>
           <div class="ctrl"><div class="row"><label>Admisiones / día</label><span class="num" id="v_arr">150</span></div><input type="range" id="arr" min="80" max="260" step="5" value="150"></div>
@@ -323,7 +340,7 @@
           <div class="ctrl"><div class="row"><label>Camas UTI (intermedio)</label><span class="num" id="v_bT">28</span></div><input type="range" id="bT" min="5" max="80" step="1" value="28"></div>
           <div class="ctrl"><div class="row"><label>Camas UCI (intensivo)</label><span class="num" id="v_bU">10</span></div><input type="range" id="bU" min="2" max="40" step="1" value="10"></div>
 
-          <div class="sect-divider"><i style="background:var(--ok)"></i>Válvulas de salida</div>
+          <div class="sect-divider"><i style="background:var(--ok)"></i>Mecanismos de egreso</div>
           <div class="ctrl"><div class="row"><label>% camas dotación ofrecidas / día</label><span class="num" id="v_off">18%</span></div><input type="range" id="off" min="2" max="40" step="1" value="18"></div>
           <div class="ctrl"><div class="row"><label>→ Pabellón (cirugía) / día</label><span class="num" id="v_pab">8</span></div><input type="range" id="pab" min="0" max="20" step="1" value="8"></div>
           <div class="ctrl"><div class="row"><label>→ Traslado UGCC / Ley de Urgencia / día</label><span class="num" id="v_ugcc">3</span></div><input type="range" id="ugcc" min="0" max="20" step="1" value="3"></div>
@@ -350,7 +367,7 @@
           <div class="sect-divider"><i style="background:var(--ink-faint)"></i>Simulación</div>
           <div class="ctrl"><div class="row"><label>Ocupación inicial</label><span class="num" id="v_init">80%</span></div><input type="range" id="init" min="0" max="100" step="5" value="80"></div>
           <div class="ctrl"><div class="row"><label>Días a simular <span style="color:var(--ink-faint);font-family:var(--mono);font-size:10px">horizonte</span></label><span class="num" id="v_days">120</span></div><input type="range" id="days" min="14" max="240" step="1" value="120">
-          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">Cuántos días dura la "película": el eje horizontal de los gráficos. La saturación se acumula con el tiempo, así que más días muestran cómo evoluciona hasta estabilizarse.</p></div>
+          <p style="font-size:11px;color:var(--ink-faint);margin-top:5px;line-height:1.4">Cuántos días dura la estimación: el eje horizontal de los gráficos. La saturación se acumula con el tiempo, así que más días muestran cómo evoluciona hasta estabilizarse.</p></div>
         </div>
       </div>
 
@@ -360,55 +377,25 @@
 
         <div class="chart-card">
           <h3>Pacientes en boarding — censo de 24 h</h3>
-          <p>Cuántos pacientes esperan cama dentro de la Urgencia en un día cualquiera. Es la saturación, hecha número.</p>
+          <p>Número de pacientes que permanecen en la Urgencia a la espera de cama en un día determinado. Expresa la magnitud de la congestión.</p>
           <div class="chart-box"><canvas id="chB"></canvas></div>
         </div>
 
         <div class="two-col">
           <div class="chart-card">
-            <h3>Ocupación por unidad (%)</h3>
-            <p>Al llegar a 100% deja de sacar pacientes de la Urgencia.</p>
+            <h3>Tasa de LWBS — abandono sin atención (%)</h3>
+            <p>Proporción de pacientes que se retiran sin ser atendidos. Es un indicador de seguridad que se eleva a medida que aumenta la congestión.</p>
+            <div class="chart-box"><canvas id="chL"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>Ocupación por unidad de destino (%)</h3>
+            <p>Al alcanzar el 100% de ocupación, la unidad de destino deja de admitir pacientes desde la Urgencia, interrumpiendo el egreso.</p>
             <div class="chart-box"><canvas id="chO"></canvas></div>
             <div class="legend">
               <span><i style="background:var(--media)"></i>Media</span>
               <span><i style="background:var(--uti)"></i>UTI</span>
               <span><i style="background:var(--uci)"></i>UCI</span>
             </div>
-          </div>
-          <div class="chart-card">
-            <h3>Hospitalizados en box · censo</h3>
-            <p>Pacientes que completan su hospitalización dentro de la Urgencia: síntoma de saturación.</p>
-            <div class="chart-box"><canvas id="chD"></canvas></div>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="chart-card">
-            <h3>Tasa de LWBS — se van sin ser atendidos (%)</h3>
-            <p>Indicador de seguridad que se dispara cuando la Urgencia colapsa.</p>
-            <div class="chart-box"><canvas id="chL"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <h3>Salida a pabellón / día</h3>
-            <p>Pacientes que van directo a cirugía: una válvula que drena la Urgencia.</p>
-            <div class="chart-box"><canvas id="chP"></canvas></div>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="chart-card">
-            <h3>Rescate del boarding · UGCC y domiciliaria</h3>
-            <p>Pacientes sacados de la cola hacia la red o al domicilio: válvulas de rescate.</p>
-            <div class="chart-box"><canvas id="chU"></canvas></div>
-            <div class="legend">
-              <span><i style="background:var(--navy)"></i>UGCC / Ley Urgencia</span>
-              <span><i style="background:var(--dom)"></i>Hosp. domiciliaria</span>
-            </div>
-          </div>
-          <div class="chart-card">
-            <h3>Egresos desde el box · día</h3>
-            <p>Altas diarias de quienes completaron su hospitalización en la Urgencia y liberan el box.</p>
-            <div class="chart-box"><canvas id="chE"></canvas></div>
           </div>
         </div>
 
@@ -423,18 +410,18 @@
 
   <!-- ============================== VIEW 2: SERVICIO GENÉRICO (interactivo) ============================== -->
   <section class="view" id="view-med">
-    <p class="lede">Cambiamos de perspectiva: ahora estamos <b>dentro</b> de un servicio de atención cerrada genérico (Medicina Interna). La Urgencia presiona por una cama; este servicio decide cuán rápido la libera. Mueve las perillas de <b>estadía</b> y <b>outliers</b> y observa cómo cambian los indicadores GRD y cuántas camas se liberan para la Urgencia. <b>Es un servicio hipotético para experimentar</b>, no un caso real.</p>
+    <p class="lede">Cambiamos de perspectiva: ahora el foco está <b>dentro</b> de un servicio de hospitalización (Medicina Interna). La Urgencia demanda camas; este servicio determina con qué velocidad las libera. Al ajustar la <b>estadía</b> y los <b>outliers</b> es posible observar cómo varían los indicadores GRD y cuántas camas quedan disponibles para la Urgencia. <b>Se trata de un servicio hipotético, con fines de experimentación</b>, no de un caso real.</p>
 
     <div class="ctx-card">
       <div class="meta">Servicio hipotético · 250 camas de complejidad media</div>
       <h3>¿Cómo la estadía y los outliers afectan la eficiencia?</h3>
-      <p>La norma ministerial fija una estadía media bruta cercana a <b>8 días</b> para este tipo de servicio. Cada día de estadía de más es una cama que la Urgencia no recibe. Usa las perillas para ver el efecto directo sobre los días-cama, el exceso de estancias y las camas que se podrían liberar.</p>
+      <p>La norma ministerial fija una estadía media bruta cercana a <b>8 días</b> para este tipo de servicio. Cada día adicional de estadía equivale a una cama menos disponible para la Urgencia. Al ajustar los factores se observa el efecto directo sobre los días-cama, el exceso de estancias y las camas potencialmente liberables.</p>
     </div>
 
     <div class="grid">
       <div class="controls">
         <div class="panel">
-          <h2><span class="dot"></span>Perillas del servicio</h2>
+          <h2><span class="dot"></span>Factores del servicio</h2>
           <div class="ctrl"><div class="row"><label>Egresos / año</label><span class="num" id="v_meg">12.000</span></div><input type="range" id="meg" min="4000" max="20000" step="250" value="12000"></div>
           <div class="ctrl"><div class="row"><label>PM GRD (complejidad)</label><span class="num" id="v_mpm">1,30</span></div><input type="range" id="mpm" min="0.7" max="2.5" step="0.01" value="1.30"></div>
           <div class="sect-divider"><i style="background:var(--media)"></i>Eficiencia interna</div>
@@ -526,7 +513,7 @@
 
   <!-- ============================== VIEW 4: MAPA CONCEPTUAL ============================== -->
   <section class="view" id="view-mapa">
-    <p class="lede">Las variables del modelo <b>no son independientes</b>, y sus relaciones <b>no son todas iguales</b>: cada una influye sobre varias otras, más fuerte sobre algunas que sobre otras. Este mapa es para <b>discutir el sistema</b>, no para calcular. La idea es ver cómo una palanca empuja a las demás y por qué a veces mover algo "no se nota".</p>
+    <p class="lede">Esta es una propuesta de relación, un primer bosquejo si se quiere. Las variables del modelo <b>no son independientes</b>, y sus relaciones <b>no son todas iguales</b>: cada una influye sobre varias otras, más fuerte sobre algunas que sobre otras. Este mapa es para <b>discutir el sistema</b>, no para calcular. La idea es ver cómo una variable incide sobre las demás y por qué a veces modificar un factor "no se nota".</p>
 
     <div class="mapa-intro">
       <h3>Cómo leer el mapa</h3>
@@ -545,7 +532,7 @@
         <!-- columnas: titulos -->
         <text x="95" y="26" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="#90a0b5" letter-spacing="1">ENTRADA</text>
         <text x="340" y="26" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="#90a0b5" letter-spacing="1">RECURSOS Y FLUJO</text>
-        <text x="620" y="26" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="#90a0b5" letter-spacing="1">VÁLVULAS DE SALIDA</text>
+        <text x="620" y="26" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="#90a0b5" letter-spacing="1">MECANISMOS DE EGRESO</text>
         <text x="885" y="26" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="#90a0b5" letter-spacing="1">RESULTADO</text>
 
         <!-- ===== FLECHAS (se dibujan primero, bajo los nodos) ===== -->
@@ -608,23 +595,59 @@
     </div>
 
     <div class="map-rel">
-      <h3>Las relaciones que vale la pena discutir</h3>
-      <div class="rel"><div class="ico" style="background:#1f9d72">≠</div><div class="txt"><b>La estadía no actúa sola.</b><span class="tag" style="background:rgba(31,157,114,.15);color:var(--ok-d)">no lineal</span><br>Bajar la estadía sube la capacidad de egreso, pero ese efecto se diluye si hay <b>pocas camas de ese tipo</b> o si <b>casi nadie va ahí</b> (bajar la estadía de UCI no mueve nada si solo el 1% la usa). Y aunque liberes camas rápido, si el <b>cupo ofrecido</b> a la Urgencia es bajo, ese se vuelve el cuello de botella y la estadía deja de notarse. Capacidad de egreso = MÍN(Σ camas÷estadía, cupo ofrecido).</div></div>
-      <div class="rel"><div class="ico" style="background:#5a6b82">□</div><div class="txt"><b>La capacidad física (box) tiene doble rol.</b><span class="tag" style="background:rgba(90,107,130,.15);color:#5a6b82">indirecta</span><br>No saca a nadie — pero define <b>cuánto boarding cabe</b> antes del tope, y al saturarse <b>dispara el abandono</b> (la atención se frena). Más box sin flujo no resuelve: solo permite que la cola crezca.</div></div>
-      <div class="rel"><div class="ico" style="background:#d64545">↻</div><div class="txt"><b>El abandono es un freno que se auto-regula.</b><span class="tag" style="background:rgba(214,69,69,.15);color:var(--alarm)">bucle</span><br>Más boarding → más abandono (LWBS sube) → <b>menos demanda efectiva de cama</b> (los que se van ya no la necesitan) → el boarding deja de crecer. Por eso el censo se estabiliza en un número en vez de subir al infinito. Es el bucle rojo del mapa: trágico pero estabilizador.</div></div>
-      <div class="rel"><div class="ico" style="background:#1f3a93">→</div><div class="txt"><b>Las válvulas de salida compiten por la misma cola.</b><span class="tag" style="background:rgba(31,58,147,.12);color:var(--navy)">acoplada</span><br>Pabellón, UGCC, domiciliaria y las altas en box sacan pacientes del mismo boarding. Si una vacía mucho la cola, las otras tienen menos de dónde sacar — por eso sus efectos no se suman de forma simple.</div></div>
-    </div>
+      <h3>Boarding contra cada variable · sensibilidad en vivo</h3>
+      <p style="font-size:12.5px;color:var(--ink-dim);margin-bottom:6px;line-height:1.5">Cada curva recorre <b>una</b> variable a lo largo de su rango y muestra el boarding resultante. Para que las relaciones sean visibles, parten de un <b>escenario de referencia tensionado</b> (un hospital con presión); el punto naranja indica el valor configurado en la primera pestaña. La <b>forma</b> de la curva es informativa: pendiente pronunciada implica gran impacto; curva plana, escaso efecto; con codo, una relación no lineal. Todas comparten la misma escala vertical para permitir su comparación. <span style="font-family:var(--mono);font-size:11px">Al modificar los factores en la pestaña Urgencia, las curvas se recalculan.</span></p>
+      <p style="font-size:12.5px;color:var(--navy);background:var(--bg2);border-radius:10px;padding:12px 15px;line-height:1.55;margin-bottom:4px"><b>Una hipótesis para discutir:</b> las curvas sugieren que el sistema tiende a <b>puntos de equilibrio</b>, y que la <b>demanda</b> (admisiones × proporción que requiere hospitalización) sería el determinante fundamental de su nivel. Los demás factores —camas, estadía, mecanismos de egreso— modulan ese equilibrio, pero es la presión de entrada la que fija el orden de magnitud en torno al cual el resto oscila.</p>
 
-    <div class="mapa-intro" style="border-left-color:var(--sky)">
-      <h3>Para discutir con el grupo</h3>
-      <p>¿Cuál es el cuello de botella de <i>tu</i> hospital: las camas, la estadía o el cupo que gestión libera a la Urgencia? ¿Qué pasaría si solo agrandas la Urgencia (más box) sin tocar el flujo? ¿Por qué dos hospitales con las mismas camas pueden tener boarding muy distinto? El mapa ayuda a ordenar la conversación: casi nunca hay una sola causa.</p>
+      <div class="relx">
+        <div class="txt"><div class="rh"><span class="ico" style="background:#1f9d72">≠</span><b>La estadía no actúa sola.</b><span class="tag" style="background:rgba(31,157,114,.15);color:var(--ok-d)">no lineal</span></div>
+          Bajar la estadía sube la capacidad de egreso, pero el efecto se diluye si hay <b>pocas camas de ese tipo</b> o si <b>casi nadie va ahí</b> (la estadía de UCI casi no mueve nada con 1% de pacientes). Y si el <b>cupo ofrecido</b> es bajo, ese manda y la estadía deja de notarse. Capacidad = MÍN(Σ camas÷estadía, cupo).</div>
+        <div class="sens-grid g3">
+          <div class="sens"><div class="st">Estadía media → boarding</div><canvas id="s_losM"></canvas></div>
+          <div class="sens"><div class="st">Estadía UTI → boarding</div><canvas id="s_losT"></canvas></div>
+          <div class="sens"><div class="st">Estadía UCI → boarding</div><canvas id="s_losU"></canvas></div>
+          <div class="sens"><div class="st">Camas medias → boarding</div><canvas id="s_bM"></canvas></div>
+          <div class="sens"><div class="st">Camas UTI → boarding</div><canvas id="s_bT"></canvas></div>
+          <div class="sens"><div class="st">Cupo ofrecido → boarding</div><canvas id="s_off"></canvas></div>
+        </div>
+      </div>
+
+      <div class="relx">
+        <div class="txt"><div class="rh"><span class="ico" style="background:#5a6b82">□</span><b>La capacidad física (box) tiene doble rol.</b><span class="tag" style="background:rgba(90,107,130,.15);color:#5a6b82">indirecta</span></div>
+          No saca a nadie — define <b>cuánto boarding cabe</b> antes del tope, y al saturarse <b>dispara el abandono</b>. Más box sin flujo no resuelve: solo deja crecer la cola. El umbral de saturación marca dónde la atención se frena.</div>
+        <div class="sens-grid g2">
+          <div class="sens"><div class="st">Capacidad física → boarding</div><canvas id="s_ed"></canvas></div>
+          <div class="sens"><div class="st">Umbral saturación → boarding</div><canvas id="s_sat"></canvas></div>
+        </div>
+      </div>
+
+      <div class="relx">
+        <div class="txt"><div class="rh"><span class="ico" style="background:#d64545">↻</span><b>El abandono es un freno que se auto-regula.</b><span class="tag" style="background:rgba(214,69,69,.15);color:var(--alarm)">bucle</span></div>
+          Más boarding → más abandono → <b>menos demanda efectiva</b> → el boarding deja de crecer. Por eso el censo se estabiliza. Sube las admisiones y verás que el boarding no crece linealmente: el abandono lo frena.</div>
+        <div class="sens-grid g3">
+          <div class="sens"><div class="st">Admisiones → boarding</div><canvas id="s_arr"></canvas></div>
+          <div class="sens"><div class="st">% hospitaliza → boarding</div><canvas id="s_hosp"></canvas></div>
+          <div class="sens"><div class="st">LWBS base → boarding</div><canvas id="s_lwbs"></canvas></div>
+        </div>
+      </div>
+
+      <div class="relx">
+        <div class="txt"><div class="rh"><span class="ico" style="background:#1f3a93">→</span><b>Las válvulas de salida compiten por la misma cola.</b><span class="tag" style="background:rgba(31,58,147,.12);color:var(--navy)">acoplada</span></div>
+          Pabellón, UGCC, domiciliaria y las altas en box sacan del mismo boarding. Si una vacía mucho la cola, las otras tienen menos de dónde sacar — sus efectos no se suman simple. Verás que cada curva se aplana cuando ya no queda cola que drenar.</div>
+        <div class="sens-grid g2">
+          <div class="sens"><div class="st">Pabellón → boarding</div><canvas id="s_pab"></canvas></div>
+          <div class="sens"><div class="st">UGCC → boarding</div><canvas id="s_ugcc"></canvas></div>
+          <div class="sens"><div class="st">Rescate domic. → boarding</div><canvas id="s_hdom"></canvas></div>
+          <div class="sens"><div class="st">Altas en box → boarding</div><canvas id="s_edadm"></canvas></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <footer>
-    <b>Cómo leer la pestaña Urgencia.</b> Cada día entran las admisiones; una parte se va de alta, otra hace LWBS, otra va a pabellón (cirugía) y el resto necesita cama. Si no hay cama libre, el paciente hace boarding. El censo de boarding es un número de 24 h; cuando supera la capacidad física, el exceso se deriva.<br>
-    <b>Cómo leer la pestaña Servicio cerrado.</b> Un servicio hipotético de Medicina Interna: mueve las perillas de estadía y outliers y observa cómo cambian los indicadores GRD. La estadía media y el IEMA deciden cuán rápido se liberan camas — es decir, cuánto alivio recibe la Urgencia.<br>
-    <b>Casos de estudio.</b> Cuatro servicios con problemas distintos, para analizar en grupo con la lógica del policy brief: identificar el problema central y fundamentar una propuesta con al menos tres indicadores.<br>
+    <b>Pestaña Urgencia.</b> Cada día ingresan admisiones; una fracción egresa de alta, otra abandona sin atención (LWBS), otra accede a pabellón y el resto requiere hospitalización. Si no hay cama disponible en la unidad de destino, el paciente permanece en boarding. El censo de boarding corresponde a un corte de 24 horas; al superar la capacidad física, el exceso se deriva a la red.<br>
+    <b>Pestaña Servicio cerrado.</b> Servicio hipotético de Medicina Interna en el que, al ajustar la estadía y los outliers, se observa la variación de los indicadores GRD. La estadía media y el IEMA determinan la velocidad de liberación de camas y, con ello, la capacidad de respuesta a la demanda de la Urgencia.<br>
+    <b>Casos de estudio.</b> Cuatro servicios con problemáticas distintas, para análisis grupal bajo la lógica del policy brief: identificar el problema central y fundamentar una propuesta con al menos tres indicadores.<br>
     <b>Modelo educativo</b> — simulación determinística de flujo en tiempo discreto (1 paso = 1 día). No reemplaza estadística operacional real. · Desarrollado por <b>Matías Libuy</b>.
   </footer>
 
@@ -639,6 +662,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.getElementById('view-'+t.dataset.view).classList.add('active');
   if(t.dataset.view==='med') initMed();
   if(t.dataset.view==='casos') initCasos();
+  if(t.dataset.view==='mapa') initMapa();
 });
 
 /* ===================== URGENCIA ===================== */
@@ -753,7 +777,7 @@ function simulate(s){
 const PAL={media:'#2aa9e0',uti:'#f08a1d',uci:'#d64545',dom:'#1f9d72'};
 const FM="'IBM Plex Mono', monospace";
 Chart.defaults.color='#5a6b82';Chart.defaults.font.family=FM;Chart.defaults.font.size=11;
-let chB,chO,chD,chL,chP,chU,chE;
+let chB,chO,chL;
 
 function baseOpts(yMax){
   const y={grid:{color:'rgba(221,229,239,.9)'},beginAtZero:true};
@@ -802,21 +826,10 @@ function renderU(){
   const occDs=[ds('Media',o.occ.media,PAL.media),ds('UTI',o.occ.uti,PAL.uti),ds('UCI',o.occ.uci,PAL.uci)];
   if(!chO){chO=new Chart(document.getElementById('chO'),{type:'line',data:{labels:o.labels,datasets:occDs},options:baseOpts(108)});}
   else{chO.data.labels=o.labels;occDs.forEach((d,i)=>chO.data.datasets[i].data=d.data);chO.update();}
-  if(!chD){chD=new Chart(document.getElementById('chD'),{type:'line',data:{labels:o.labels,datasets:[ds('Hosp. en box',o.edHospOcc,'#d64545')]},options:baseOpts()});
-    const c=chD.canvas.getContext('2d');chD.data.datasets[0].backgroundColor=grad(c,'#d64545');chD.data.datasets[0].fill=true;chD.update();}
-  else{chD.data.labels=o.labels;chD.data.datasets[0].data=o.edHospOcc;chD.update();}
   if(!chL){chL=new Chart(document.getElementById('chL'),{type:'line',data:{labels:o.labels,datasets:[ds('LWBS',o.lwbs,'#f08a1d')]},options:baseOpts()});
     chL.options.scales.y.ticks={callback:v=>v+'%'};
     const c=chL.canvas.getContext('2d');chL.data.datasets[0].backgroundColor=grad(c,'#f08a1d');chL.data.datasets[0].fill=true;chL.update();}
   else{chL.data.labels=o.labels;chL.data.datasets[0].data=o.lwbs;chL.update();}
-  if(!chP){chP=new Chart(document.getElementById('chP'),{type:'line',data:{labels:o.labels,datasets:[ds('Pabellón',o.pabFlow,'#1f9d72')]},options:baseOpts()});
-    const c=chP.canvas.getContext('2d');chP.data.datasets[0].backgroundColor=grad(c,'#1f9d72');chP.data.datasets[0].fill=true;chP.update();}
-  else{chP.data.labels=o.labels;chP.data.datasets[0].data=o.pabFlow;chP.update();}
-  if(!chU){chU=new Chart(document.getElementById('chU'),{type:'line',data:{labels:o.labels,datasets:[ds('UGCC',o.ugccFlow,'#1f3a93'),ds('Domiciliaria',o.hdomFlow,'#1f9d72')]},options:baseOpts()});chU.update();}
-  else{chU.data.labels=o.labels;chU.data.datasets[0].data=o.ugccFlow;chU.data.datasets[1].data=o.hdomFlow;chU.update();}
-  if(!chE){chE=new Chart(document.getElementById('chE'),{type:'line',data:{labels:o.labels,datasets:[ds('Altas en Urgencia',o.edAltas,'#d64545')]},options:baseOpts()});
-    const c=chE.canvas.getContext('2d');chE.data.datasets[0].backgroundColor=grad(c,'#d64545');chE.data.datasets[0].fill=true;chE.update();}
-  else{chE.data.labels=o.labels;chE.data.datasets[0].data=o.edAltas;chE.update();}
 }
 
 function renderReco(o){
@@ -824,17 +837,12 @@ function renderReco(o){
   const tense=!collapsed&&o.fB>o.edCap*0.3;
   const box=document.getElementById('reco');
   box.classList.toggle('show-c',collapsed);
-  document.getElementById('reco-h').textContent= collapsed?'⚠ Situación C — indicadores de colapso a vigilar' : tense?'Indicadores de tensión a vigilar':'Indicadores en rango — sistema sano';
-  document.getElementById('reco-l').textContent= collapsed
-    ? 'La Urgencia no es el problema: el problema está río abajo. Estos son los indicadores y palancas que un equipo de gestión debería accionar.'
-    : 'Con el sistema fluyendo, estos indicadores sirven de alerta temprana antes de que aparezca el colapso.';
+  document.getElementById('reco-h').textContent='Cómo interpretar los tres gráficos';
+  document.getElementById('reco-l').textContent='Los tres indicadores describen, desde ángulos complementarios, el mismo fenómeno de congestión. Sus valores se actualizan con cada modificación de los factores de flujo.';
   const items=[
-    ['Tasa de LWBS','seguridad',`Hoy ${o.fL}%. Sobre ~15-20% es señal de espera intolerable. Sube sola con el boarding: es termómetro y consecuencia a la vez.`],
-    ['Boarding / tiempo en Urgencia','flujo',`Censo ${Math.round(o.fB)} pacientes (tope físico ${o.edCap}). El indicador clave del colapso no se origina en la Urgencia sino en la falta de cama.`],
-    ['Horas en diversión','red',`Derivación ${o.fD.toFixed(1)}/día. Cuando es >0 el hospital expulsa demanda a la red: medir y minimizar.`],
-    ['Índice de ocupación río abajo','camas',`Media ${Math.round(o.fOM)}%. Sobre 90-95% el sistema pierde capacidad de absorber peaks. Gestión de altas y estadía son las palancas.`],
-    ['Capacidad vs demanda (Little)','estructura',`Egreso ${o.capacity.toFixed(1)}/día vs demanda ${o.demandBeds.toFixed(1)}/día. Si la demanda gana, ninguna mejora "dentro" de la Urgencia alcanza.`],
-    ['% camas ofrecidas / estadía','política',`Ofrecer más cupo o acortar estadías mueve la capacidad de egreso. Es donde una propuesta de gestión genera impacto real.`]
+    ['Boarding — censo de 24 h','congestión',`Censo actual de ${Math.round(o.fB)} pacientes (capacidad física ${o.edCap}). Refleja la acumulación de pacientes en espera de cama. Su nivel no se origina en la Urgencia, sino en la insuficiencia de capacidad de egreso: cuando la demanda de cama (${o.demandBeds.toFixed(1)}/día) supera la capacidad de egreso disponible (${o.capacity.toFixed(1)}/día), el censo crece y tiende a estabilizarse en un punto de equilibrio.`],
+    ['Tasa de LWBS','seguridad',`Abandono actual de ${o.fL}%. Aumenta de forma no lineal con la congestión: bajo condiciones normales se mantiene en su nivel basal, pero al superar el umbral de saturación la atención se interrumpe y el abandono se eleva abruptamente. Es a la vez consecuencia y señal de alarma del colapso.`],
+    ['Ocupación por unidad de destino','egreso',`Ocupación de cama media en ${Math.round(o.fOM)}%. Determina la capacidad efectiva de egreso: al aproximarse al 100%, la unidad de destino deja de admitir pacientes y el flujo de salida se detiene. La estadía media y la dotación de camas son los principales determinantes de este indicador.`]
   ];
   document.getElementById('reco-g').innerHTML=items.map(i=>
     `<div class="reco-item"><div class="rh">${i[0]} <span class="ic">${i[1]}</span></div><p>${i[2]}</p></div>`).join('');
@@ -847,6 +855,88 @@ uIds.forEach(id=>{
   el.addEventListener('change',renderU);
 });
 renderU();
+
+/* ===================== MAPA: gráficos de sensibilidad (boarding vs cada variable) ===================== */
+let sensCharts={};
+// Estado base de REFERENCIA para los gráficos: un hospital tensionado (no el holgado por defecto),
+// para que cada relación muestre su forma. El punto naranja marca el valor actual de esa perilla.
+function sensBase(){
+  // parte del estado actual pero lo lleva a una tensión moderada, de modo que mover
+  // cada variable haga visible su efecto sobre el boarding
+  const a=readU();
+  const b=JSON.parse(JSON.stringify(a));
+  b.arrivals=Math.max(b.arrivals,200);
+  b.offeredPct=Math.min(b.offeredPct,0.10);
+  b.beds={media:Math.min(b.beds.media,80),uti:Math.min(b.beds.uti,28),uci:Math.min(b.beds.uci,10)};
+  b.los={media:Math.max(b.los.media,9),uti:Math.max(b.los.uti,12),uci:Math.max(b.los.uci,16)};
+  b.pab=Math.min(b.pab,4);b.ugcc=Math.min(b.ugcc,2);b.hdom=Math.min(b.hdom,4);b.edAdm=Math.min(b.edAdm,5);
+  return b;
+}
+function sensSpecs(){
+  const base=sensBase();
+  const run=mut=>{const s=JSON.parse(JSON.stringify(base));mut(s);
+    s.pMedia=Math.max(0,1-s.pUCI-s.pUTI);s.lwbsMax=Math.min(0.7,s.lwbsBase+0.32);
+    return simulate(s).fB;};
+  const g=id=>parseFloat(document.getElementById(id).value);
+  return [
+    ['s_losM', g('losM'), [3,16,26], v=>run(s=>s.los.media=v)],
+    ['s_losT', g('losT'), [4,21,26], v=>run(s=>s.los.uti=v)],
+    ['s_losU', g('losU'), [4,25,26], v=>run(s=>s.los.uci=v)],
+    ['s_bM',   g('bM'),   [20,300,26], v=>run(s=>s.beds.media=v)],
+    ['s_bT',   g('bT'),   [5,60,26], v=>run(s=>s.beds.uti=v)],
+    ['s_off',  g('off'),  [2,40,26], v=>run(s=>s.offeredPct=v/100)],
+    ['s_ed',   g('ed'),   [20,140,26], v=>run(s=>s.edCap=v)],
+    ['s_sat',  g('sat'),  [20,120,26], v=>run(s=>s.satThresh=v)],
+    ['s_arr',  g('arr'),  [40,360,26], v=>run(s=>s.arrivals=v)],
+    ['s_hosp', g('hosp'), [5,60,26], v=>run(s=>s.pHosp=v/100)],
+    ['s_lwbs', g('lwbs'), [0,40,26], v=>run(s=>s.lwbsBase=v/100)],
+    ['s_pab',  g('pab'),  [0,20,21], v=>run(s=>s.pab=v)],
+    ['s_ugcc', g('ugcc'), [0,20,21], v=>run(s=>s.ugcc=v)],
+    ['s_hdom', g('hdom'), [0,20,21], v=>run(s=>s.hdom=v)],
+    ['s_edadm',g('edadm'),[0,15,16], v=>run(s=>s.edAdm=v)],
+  ];
+}
+function drawSens(){
+  const specs=sensSpecs();
+  // escala Y común a todos los gráficos para que sean comparables
+  let gmax=0;const cache=[];
+  specs.forEach(([cid,cur,[mn,mx,n],evalFn])=>{
+    const xs=[],ys=[];
+    for(let i=0;i<n;i++){const x=mn+(mx-mn)*i/(n-1);xs.push(x);ys.push(+evalFn(x).toFixed(1));}
+    gmax=Math.max(gmax,...ys);
+    cache.push([cid,cur,xs,ys]);
+  });
+  const yTop=Math.max(10,Math.ceil(gmax/10)*10);
+  cache.forEach(([cid,cur,xs,ys])=>{
+    let ci=0,best=1e9;xs.forEach((x,i)=>{if(Math.abs(x-cur)<best){best=Math.abs(x-cur);ci=i;}});
+    const pts=xs.map((x,i)=>i===ci?ys[i]:null);
+    const cv=document.getElementById(cid);if(!cv)return;
+    const opt={responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{enabled:true,backgroundColor:'#16243a',titleFont:{family:FM,size:10},bodyFont:{family:FM,size:10},padding:6,
+        callbacks:{title:items=>'x = '+(+items[0].label).toFixed(1),label:it=>'boarding '+it.formattedValue}}},
+      scales:{x:{display:true,ticks:{maxTicksLimit:4,font:{family:FM,size:8},color:'#90a0b5'},grid:{display:false}},
+        y:{display:true,min:0,max:yTop,ticks:{maxTicksLimit:3,font:{family:FM,size:8},color:'#90a0b5'},grid:{color:'rgba(221,229,239,.7)'}}}};
+    if(!sensCharts[cid]){
+      sensCharts[cid]=new Chart(cv,{type:'line',data:{labels:xs.map(x=>x.toFixed(1)),datasets:[
+        {data:ys,borderColor:'#1f3a93',borderWidth:2,pointRadius:0,tension:.2,fill:true,backgroundColor:'rgba(31,58,147,.07)'},
+        {data:pts,borderColor:'#f08a1d',pointRadius:4,pointBackgroundColor:'#f08a1d',showLine:false}
+      ]},options:opt});
+    }else{
+      const ch=sensCharts[cid];
+      ch.data.labels=xs.map(x=>x.toFixed(1));
+      ch.data.datasets[0].data=ys;ch.data.datasets[1].data=pts;
+      ch.options.scales.y.max=yTop;ch.update('none');
+    }
+  });
+}
+let mapaInit=false;
+function initMapa(){
+  drawSens();
+  if(!mapaInit){mapaInit=true;
+    // redibuja al cambiar cualquier perilla (aunque estés en otra pestaña, quedará actualizado)
+    uIds.forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(document.getElementById('view-mapa').classList.contains('active'))drawSens();}));
+  }
+}
 
 /* ===================== MEDICINA INTERNA ===================== */
 let medInit=false,mEM,mDC,mOut,mUPH;
@@ -976,7 +1066,7 @@ const CASOS=[
        <div class="keypt">Propuesta: cerrar brechas de enfermería UCI y kinesiología respiratoria en turnos críticos, protocolos de manejo de paciente crítico, y monitoreo de mortalidad ajustada.</div>`},
       {q:'¿Qué dice que la transición fue brusca y no planificada?',
        a:`El cambio nació de un problema externo (pabellones malos del centro de derivación por la licitación de aire acondicionado), no de una planificación. El alza sostenida de PM GRD, mortalidad y outliers, sumada al mal clima laboral, sugiere un servicio <b>sobrepasado por una demanda que no eligió</b>.
-       <div class="keypt">Aquí la palanca de gestión es de red: redistribuir la carga quirúrgica compleja y dotar adecuadamente antes de asumir casuística crítica.</div>`}
+       <div class="keypt">Aquí la intervención de gestión es de red: redistribuir la carga quirúrgica compleja y dotar adecuadamente antes de asumir casuística crítica.</div>`}
     ]
   },
   {
